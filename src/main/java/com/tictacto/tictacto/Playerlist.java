@@ -28,11 +28,30 @@ public class Playerlist {
                     }
                 }
                 int startIndex = responseBuilder.toString().indexOf("[");
-                return responseBuilder.substring(startIndex);
+                String list = responseBuilder.substring(startIndex);
+                String content = list.substring(1, list.length() - 1).trim();
+                String element = content.replaceAll("\"", "");
+                element = element.replaceAll("]", "");
+                element = element.replaceAll(", ", "\n");
+
+                String[] words = element.split("\n");
+                StringBuilder capitalized = new StringBuilder();
+
+                for (String word : words) {
+                    if (!word.isEmpty()) {
+                        String firstLetter = word.substring(0, 1).toUpperCase();
+                        String restOfWord = word.substring(1).toLowerCase();
+                        capitalized.append(firstLetter).append(restOfWord).append(" ");
+                    }
+                }
+
+                element = capitalized.toString().trim();
+                element = element.replaceAll(" ", "\n");
+                return element;
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-            return "Connection error: " + ex.getMessage();
+            return null;
         }
     }
 }
