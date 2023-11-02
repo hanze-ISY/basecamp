@@ -1,8 +1,8 @@
 package com.tictacto.tictacto;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -26,22 +26,34 @@ public class UserNameController {
     public void login(ActionEvent e) throws IOException {
 
         String text = textLogin.getText();
+        Server server = Server.getInstance();
+        DataEventListener handler = new DataEventListener() {
+            @Override
+            public void data(DataEvent event) {
+                if (event.getData().equals("OK")) {
+                    Session session = Session.getInstance();
+                    session.setUsername(text.toLowerCase());
 
-        if(text.isEmpty()) {
+                    try {
+                        JFXUtils.Navigate("gamepage.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    Platform.runLater(() -> server.RemoveEventListener(this));
+                }
+            }
+
+            @Override
+            public void error(DataEvent event) {
+                errorMessageLabel.setText(event.getData());
+            }
+        };
+
+        if (text.isEmpty()) {
             errorMessageLabel.setText("Voer een naam in.");
-
-        }else{
-            Request connect = new Request();
-            connect.connectToServer("login " + text.toLowerCase());
-
-            Session session = Session.getInstance();
-            session.setUsername(text.toLowerCase());
-
-            Parent root = FXMLLoader.load(getClass().getResource("gamepage.fxml"));
-            stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+        } else {
+            server.AddEventListener(handler);
+            server.SendCommand("login " + '"' + text.toLowerCase() + '"');
         }
     }
 }

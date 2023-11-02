@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -15,7 +16,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.Label?>
 
 <BorderPane prefHeight="1080.0" prefWidth="1920.0" styleClass="main-background" stylesheets="@App.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tictacto.tictacto.GamePageController">
     <right>
@@ -26,7 +26,28 @@
             <BorderPane.margin>
                 <Insets bottom="50.0" left="30.0" right="50.0" top="50.0" />
             </BorderPane.margin>
-            <Label fx:id="dataLabel" text=""/>
+            <Label text="Online Players">
+                <font>
+                    <Font size="22.0" />
+                </font>
+                <style>
+                    -fx-font-weight: bold;
+                </style>
+                <padding>
+                    <Insets left="20.0" top="10.0" />
+                </padding>
+            </Label>
+            <Label fx:id="dataLabel" text="">
+                <font>
+                    <Font size="20.0" />
+                </font>
+                <style>
+                    -fx-font-weight: bold;
+                </style>
+                <padding>
+                    <Insets left="20.0" top="10.0" />
+                </padding>
+            </Label>
         </VBox>
     </left>
     <top>
@@ -147,39 +168,39 @@
                 <Cursor fx:constant="DEFAULT" />
             </cursor>
             <children>
-                <Pane id="top-left-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css">
+                <Pane id="top-left-pane" fx:id="topleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-vertical-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1">
+                <Pane id="middle-vertical-pane" fx:id="topmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="top-right-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2">
+                <Pane id="top-right-pane" fx:id="topright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-horizontal-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.rowIndex="1">
+                <Pane id="middle-horizontal-pane" fx:id="midleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.rowIndex="1">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Pane id="middle-pane" fx:id="mdmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-horizontal-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <Pane id="middle-horizontal-pane" fx:id="midright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="bottom-left-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.rowIndex="2">
+                <Pane id="bottom-left-pane" fx:id="botleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.rowIndex="2">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-vertical-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <Pane id="middle-vertical-pane" fx:id="botmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="bottom-right-pane" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                <Pane id="bottom-right-pane" fx:id="botright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2" GridPane.rowIndex="2">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>

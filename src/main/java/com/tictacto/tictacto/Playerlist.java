@@ -1,11 +1,14 @@
 package com.tictacto.tictacto;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 public class Playerlist {
 
-    private final String serverAddress = "127.0.0.1";
+    private final String serverAddress = "145.33.225.170";
     private final int serverPort = 7789;
     private final int timeoutMillis = 600000;
 

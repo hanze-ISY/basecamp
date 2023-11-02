@@ -1,12 +1,14 @@
 package com.tictacto.tictacto;
 
-import java.io.*;
-import java.net.*;
-import java.util.Objects;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
-public class Request{
+public class Request {
 
-    private final String serverAddress = "127.0.0.1";
+    private final String serverAddress = "145.33.225.170";
     private final int serverPort = 7789;
     private final int timeoutMillis = 600000;
 
@@ -30,7 +32,7 @@ public class Request{
             }
             System.out.println("End of loop");
 
-            if (request.equals("logout")){
+            if (request.equals("logout")) {
                 in.close();
                 out.close();
                 socket.close();
