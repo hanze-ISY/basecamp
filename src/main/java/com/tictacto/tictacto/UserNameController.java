@@ -37,7 +37,12 @@ public class UserNameController {
             Session session = Session.getInstance();
             session.setUsername(text.toLowerCase());
 
-            Parent root = FXMLLoader.load(getClass().getResource("gamepage.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("gamepage.fxml"));
+            Parent root = loader.load();
+
+            GamePageController gamePageController = loader.getController();
+            gamePageController.setUsername(text);
+
             stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             scene = new Scene(root);
             stage.setScene(scene);

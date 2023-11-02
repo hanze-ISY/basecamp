@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -16,6 +17,8 @@ import java.io.IOException;
 public class GamePageController {
     @FXML
     private Label dataLabel;
+    @FXML
+    private Text userLabel;
 
     public void initialize() {
         startDataFetchingTask();
@@ -39,6 +42,10 @@ public class GamePageController {
         thread.start();
     }
 
+    public void setUsername(String text) {
+        userLabel.setText(text);
+    }
+
     public void A(ActionEvent e) {
         System.out.println("A");
     }
@@ -59,9 +66,5 @@ public class GamePageController {
         Request connect = new Request();
         connect.connectToServer("logout");
         Platform.exit();
-    }
-
-    public void account(ActionEvent e) {
-        System.out.println("account");
     }
 }
