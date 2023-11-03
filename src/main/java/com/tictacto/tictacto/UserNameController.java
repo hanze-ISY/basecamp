@@ -45,6 +45,8 @@ public class UserNameController {
 
             stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             scene = new Scene(root);
+            stage.setHeight(720);
+            stage.setWidth(1280);
             stage.setScene(scene);
             stage.show();
         }

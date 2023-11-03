@@ -26,6 +26,13 @@
     -fx-border-color: rgba(0, 0, 0, 0.3)
 }
 
+.panel-right-hbox {
+    -fx-border-style: solid;
+    -fx-border-width: 0 0 2 0;
+    -fx-border-color: rgba(0, 0, 0, 0.3);
+    -fx-background-color: #084b6a;
+}
+
 .bar-left {
     -fx-background-color: #F79500;
     -fx-background-radius: 18;

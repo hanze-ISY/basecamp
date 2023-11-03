@@ -9,6 +9,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -19,6 +20,8 @@ public class GamePageController {
     private Label dataLabel;
     @FXML
     private Text userLabel;
+    @FXML
+    private TextField challengeNameField;
 
     public void initialize() {
         startDataFetchingTask();
@@ -60,6 +63,13 @@ public class GamePageController {
 
     public void D(ActionEvent e) {
         System.out.println("D");
+    }
+
+    public void challengePlayer(ActionEvent e) {
+        String challengeName = new String(challengeNameField.getText().toLowerCase());
+        String spelType = new String("tictactoe");
+        String challengeRequest = new String("challenge " + challengeName + " " + spelType);
+        System.out.println(challengeRequest);
     }
 
     public void logout(ActionEvent e) throws IOException {
