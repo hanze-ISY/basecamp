@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +26,7 @@ public class GamePageController {
     private boolean turn = true;
 
     public void initialize() {
+        userLabel.setText(Session.getInstance().getUsername());
         startDataFetchingTask();
     }
 
@@ -74,7 +76,7 @@ public class GamePageController {
         // if it's X's turn, add an "X" to the pane
         // if it's O's turn, add an "O" to the pane
         // if the pane already has an "X" or "O", do nothing
-        if (pane.getChildren().size() > 0) {
+        if (!pane.getChildren().isEmpty()) {
             return;
         }
 
@@ -84,7 +86,8 @@ public class GamePageController {
         turn = !turn;
         label.setPrefSize(pane.getWidth(), pane.getHeight());
         label.setTextFill(Color.WHITE);
-        label.setFont(label.getFont().font(pane.getHeight() / 2));
+        label.getFont();
+        label.setFont(Font.font(pane.getHeight() / 2));
         label.setAlignment(javafx.geometry.Pos.CENTER);
         pane.getChildren().add(label);
     }
@@ -106,9 +109,9 @@ public class GamePageController {
     }
 
     public void challengePlayer(ActionEvent e) {
-        String challengeName = new String(challengeNameField.getText().toLowerCase());
-        String spelType = new String("tictactoe");
-        String challengeRequest = new String("challenge " + challengeName + " " + spelType);
+        String challengeName = challengeNameField.getText().toLowerCase();
+        String spelType = "tictactoe";
+        String challengeRequest = "challenge " + challengeName + " " + spelType;
         System.out.println(challengeRequest);
     }
 
