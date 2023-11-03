@@ -18,7 +18,7 @@ public class Server {
     private Server(String serverAddress, int serverPort, int timeoutMillis) {
         System.out.printf("Connecting to server %s:%d%n", serverAddress, serverPort);
         try {
-            Socket socket = new Socket(serverAddress, serverPort);
+            socket = new Socket(serverAddress, serverPort);
             socket.setSoTimeout(timeoutMillis);
 
             System.out.println("Connected to server");
@@ -85,7 +85,6 @@ public class Server {
 
     public void CloseConnection() {
         try {
-            SendCommand("logout");
             in.close();
             out.close();
             socket.close();

@@ -24,6 +24,8 @@ public class GamePageController {
     @FXML
     private TextField challengeNameField;
     private boolean turn = true;
+    private final Server server = Server.getInstance();
+
 
     public void initialize() {
         userLabel.setText(Session.getInstance().getUsername());
@@ -31,9 +33,6 @@ public class GamePageController {
     }
 
     private void startDataFetchingTask() {
-        Playerlist connect = new Playerlist();
-         Server server = Server.getInstance();
-
         server.AddEventListener(event -> {
             String data = event.getData();
             if (data.startsWith("PLAYERLIST")) {
@@ -112,12 +111,11 @@ public class GamePageController {
         String challengeName = challengeNameField.getText().toLowerCase();
         String spelType = "tictactoe";
         String challengeRequest = "challenge " + challengeName + " " + spelType;
-        System.out.println(challengeRequest);
+        server.SendCommand(challengeRequest);
     }
 
     public void logout(ActionEvent e) throws IOException {
-        Request connect = new Request();
-        connect.connectToServer("logout");
+        server.CloseConnection();
         Platform.exit();
     }
 }
