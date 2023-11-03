@@ -28,7 +28,7 @@ public class UserNameController {
 
         String text = textLogin.getText();
         Server server = Server.getInstance();
-        DataEventListener handler = new DataEventListener() {
+        server.AddEventListener(new DataEventListener() {
             @Override
             public void data(DataEvent event) {
                 if (event.getData().equals("OK")) {
@@ -46,14 +46,13 @@ public class UserNameController {
 
             @Override
             public void error(DataEvent event) {
-                errorMessageLabel.setText(event.getData());
+                Platform.runLater(() -> errorMessageLabel.setText(event.getData()));
             }
-        };
+        });
 
         if (text.isEmpty()) {
             errorMessageLabel.setText("Voer een naam in.");
         } else {
-            server.AddEventListener(handler);
             server.SendCommand("login " + '"' + text.toLowerCase() + '"');
         }
     }

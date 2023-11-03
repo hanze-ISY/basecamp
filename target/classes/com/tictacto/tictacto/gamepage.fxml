@@ -73,7 +73,7 @@
          </children></VBox>
     </right>
     <left>
-        <VBox prefHeight="835.0" prefWidth="341.0" styleClass="bar-left" stylesheets="@App.css" BorderPane.alignment="CENTER">
+        <VBox fx:id="chatbox" prefHeight="835.0" prefWidth="341.0" styleClass="bar-left" stylesheets="@App.css" BorderPane.alignment="CENTER">
             <BorderPane.margin>
                 <Insets bottom="50.0" left="30.0" right="50.0" top="50.0" />
             </BorderPane.margin>
@@ -82,51 +82,12 @@
     <top>
         <HBox prefHeight="144.0" prefWidth="1920.0" styleClass="bar-top" stylesheets="@App.css">
             <children>
-                <Button mnemonicParsing="false" onAction="#A" prefHeight="124.0" prefWidth="300.0" stylesheets="@App.css" text="A" textFill="WHITE">
-                    <HBox.margin>
-                        <Insets left="10.0" right="20.0" top="10.0" />
-                    </HBox.margin>
-                    <font>
-                        <Font size="36.0" />
-                    </font>
-                    <cursor>
-                        <Cursor fx:constant="HAND" />
-                    </cursor>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#B" prefHeight="124.0" prefWidth="300.0" stylesheets="@App.css" text="B" textFill="#fcfcfc">
-                    <HBox.margin>
-                        <Insets bottom="10.0" right="20.0" top="10.0" />
-                    </HBox.margin>
-                    <font>
-                        <Font size="36.0" />
-                    </font>
-                    <cursor>
-                        <Cursor fx:constant="HAND" />
-                    </cursor>
-                </Button>
-                <Button minWidth="38.0" mnemonicParsing="false" onAction="#C" prefHeight="124.0" prefWidth="300.0" stylesheets="@App.css" text="C" textFill="WHITE">
-                    <HBox.margin>
-                        <Insets bottom="10.0" right="20.0" top="10.0" />
-                    </HBox.margin>
-                    <font>
-                        <Font size="36.0" />
-                    </font>
-                    <cursor>
-                        <Cursor fx:constant="HAND" />
-                    </cursor>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#D" prefHeight="124.0" prefWidth="300.0" stylesheets="@App.css" text="D" textFill="WHITE">
-                    <HBox.margin>
-                        <Insets bottom="10.0" right="20.0" top="10.0" />
-                    </HBox.margin>
-                    <font>
-                        <Font size="36.0" />
-                    </font>
-                    <cursor>
-                        <Cursor fx:constant="HAND" />
-                    </cursor>
-                </Button>
-                <Region prefHeight="150.0" prefWidth="288.0" styleClass="bar-top-region" stylesheets="@App.css" HBox.hgrow="ALWAYS" />
+            <Text fx:id="state" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="1517.09375" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font size="95.0" />
+               </font>
+            </Text>
+                <Region prefHeight="144.0" prefWidth="1104.0" styleClass="bar-top-region" stylesheets="@App.css" HBox.hgrow="ALWAYS" />
                 <ImageView fitHeight="124.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" styleClass="images">
                     <image>
                         <Image url="@images/User_Icon.png" />
@@ -171,7 +132,7 @@
         </HBox>
     </top>
     <center>
-        <GridPane BorderPane.alignment="CENTER">
+        <GridPane BorderPane.alignment="CENTER" id="gameboard">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -189,39 +150,39 @@
                 <Cursor fx:constant="DEFAULT" />
             </cursor>
             <children>
-                <Pane id="top-left-pane" fx:id="topleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css">
+                <Pane id="0" fx:id="topleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-vertical-pane" fx:id="topmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1">
+                <Pane id="1" fx:id="topmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="top-right-pane" fx:id="topright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2">
+                <Pane id="2" fx:id="topright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-horizontal-pane" fx:id="midleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.rowIndex="1">
+                <Pane id="3" fx:id="midleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.rowIndex="1">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-pane" fx:id="mdmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <Pane id="4" fx:id="mdmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-horizontal-pane" fx:id="midright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                <Pane id="5" fx:id="midright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="bottom-left-pane" fx:id="botleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.rowIndex="2">
+                <Pane id="6" fx:id="botleft" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.rowIndex="2">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="middle-vertical-pane" fx:id="botmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <Pane id="7" fx:id="botmid" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>
-                <Pane id="bottom-right-pane" fx:id="botright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                <Pane id="8" fx:id="botright" onMouseClicked="#ButtonClick" prefHeight="200.0" prefWidth="200.0" styleClass="grid-panes" stylesheets="@App.css" GridPane.columnIndex="2" GridPane.rowIndex="2">
                     <cursor>
                         <Cursor fx:constant="HAND" />
                     </cursor></Pane>

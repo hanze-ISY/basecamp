@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 public class Server {
@@ -55,8 +56,12 @@ public class Server {
                             }
                         }
                     }
-                } catch (IOException ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace();
+                }
+                finally {
+                    CloseConnection();
+                    Thread.currentThread().interrupt();
                 }
             }).start();
 
