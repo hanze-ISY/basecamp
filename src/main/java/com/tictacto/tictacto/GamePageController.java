@@ -5,6 +5,9 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -15,6 +18,10 @@ import java.util.Arrays;
 public class GamePageController {
     @FXML
     private Label dataLabel;
+    @FXML
+    private Text userLabel;
+    @FXML
+    private TextField challengeNameField;
     private boolean turn = true;
 
     public void initialize() {
@@ -56,6 +63,10 @@ public class GamePageController {
         thread.start();
     }
 
+    public void setUsername(String text) {
+        userLabel.setText(text);
+    }
+
     public void ButtonClick(MouseEvent e) {
         System.out.println("Button clicked");
         Pane pane = (Pane) e.getSource();
@@ -94,13 +105,16 @@ public class GamePageController {
         System.out.println("D");
     }
 
+    public void challengePlayer(ActionEvent e) {
+        String challengeName = new String(challengeNameField.getText().toLowerCase());
+        String spelType = new String("tictactoe");
+        String challengeRequest = new String("challenge " + challengeName + " " + spelType);
+        System.out.println(challengeRequest);
+    }
+
     public void logout(ActionEvent e) throws IOException {
         Request connect = new Request();
         connect.connectToServer("logout");
         Platform.exit();
-    }
-
-    public void account(ActionEvent e) {
-        System.out.println("account");
     }
 }
