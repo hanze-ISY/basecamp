@@ -1,12 +1,13 @@
 package com.tictacto.tictacto;
 
 public class Session {
-    private static Session instance = new Session();
+    private static final Session instance = new Session();
     private String username;
 
     private String command;
 
-    private Session() {}
+    private Session() {
+    }
 
     public static Session getInstance() {
         return instance;
