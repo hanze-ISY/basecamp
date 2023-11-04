@@ -27,7 +27,8 @@ enum GameState {
     YOUR_TURN,
     OPPONENTS_TURN,
     YOU_WON,
-    YOU_LOST
+    YOU_LOST,
+    DRAW
 }
 public class GamePageController {
     private final Server server = Server.getInstance();
@@ -63,6 +64,9 @@ public class GamePageController {
                 break;
             case YOU_LOST:
                 state.setText("Je hebt verloren :(");
+                break;
+            case DRAW:
+                state.setText("Gelijkspel!");
                 break;
         }
     }
@@ -132,6 +136,9 @@ public class GamePageController {
             }
             if (data.startsWith("GAME WIN")) {
                 currentState = GameState.YOU_WON;
+            }
+            if (data.startsWith("GAME DRAW")) {
+                currentState = GameState.DRAW;
             }
             Platform.runLater(this::updateStateHeader);
         });

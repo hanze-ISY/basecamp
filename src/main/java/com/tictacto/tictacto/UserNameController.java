@@ -24,7 +24,7 @@ public class UserNameController {
     @FXML
     private Label errorMessageLabel;
 
-    public void login(ActionEvent e) throws IOException {
+    public void login(ActionEvent e) {
 
         String text = textLogin.getText();
         Server server = Server.getInstance();
