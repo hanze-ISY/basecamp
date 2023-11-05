@@ -1,5 +1,6 @@
 package com.tictacto.tictacto;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,29 +27,33 @@ public class UserNameController {
     public void login(ActionEvent e) throws IOException {
 
         String text = textLogin.getText();
+        Server server = Server.getInstance();
+        server.AddEventListener(new DataEventListener() {
+            @Override
+            public void data(DataEvent event) {
+                if (event.getData().equals("OK")) {
+                    Session session = Session.getInstance();
+                    session.setUsername(text.toLowerCase());
 
-        if(text.isEmpty()) {
+                    try {
+                        JFXUtils.Navigate("gamepage.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                    Platform.runLater(() -> server.RemoveEventListener(this));
+                }
+            }
+
+            @Override
+            public void error(DataEvent event) {
+                Platform.runLater(() -> errorMessageLabel.setText(event.getData()));
+            }
+        });
+
+        if (text.isEmpty()) {
             errorMessageLabel.setText("Voer een naam in.");
-
-        }else{
-            Request connect = new Request();
-            connect.connectToServer("login " + text.toLowerCase());
-
-            Session session = Session.getInstance();
-            session.setUsername(text.toLowerCase());
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("gamepage.fxml"));
-            Parent root = loader.load();
-
-            GamePageController gamePageController = loader.getController();
-            gamePageController.setUsername(text);
-
-            stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            scene = new Scene(root);
-            stage.setHeight(720);
-            stage.setWidth(1280);
-            stage.setScene(scene);
-            stage.show();
+        } else {
+            server.SendCommand("login " + '"' + text.toLowerCase() + '"');
         }
     }
 }
