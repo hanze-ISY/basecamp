@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="360.0" stylesheets="@stylesheet.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tictacto.tictacto.UserNameController">
+    <center>
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="279.0" prefWidth="300.0" style="-fx-background-color: FF812C;" styleClass="inner-box" stylesheets="@stylesheet.css" BorderPane.alignment="CENTER">
+            <children>
+
+                <TextField fx:id="textLogin" layoutX="51.0" layoutY="118.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="200.0" promptText="Gebruikersnaam" styleClass="loginbox" stylesheets="@stylesheet.css">
+
+                    <font>
+                        <Font size="20.0" />
+
+                    </font>
+                </TextField>
+                <Button layoutX="99.0" layoutY="209.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#login" prefHeight="40.0" prefWidth="100.0" style="-fx-background-color: #0E65A3;" styleClass="inlogbutton" stylesheets="@stylesheet.css" text="Log in" textFill="WHITE">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+
+                </Button>
+
+
+
+                <Text fill="#0e65a3" layoutX="15.0" layoutY="157.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="icon" text="👤">
+                    <font>
+                        <Font size="35.0" />
+                    </font>
+                </Text>
+
+                <Text fill="#0e65a3" layoutX="20.0" layoutY="50.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Picobello B.V.">
+                    <font>
+                        <Font name="System Bold" size="40.0" />
+                    </font>
+                </Text>
+                <Label fx:id="errorMessageLabel" text="" textFill="red" />
+            <Text fill="WHITE" layoutX="19.0" layoutY="92.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Vul je gebruikersnaam in:">
+               <font>
+                  <Font name="System Bold" size="22.0" />
+               </font>
+            </Text>
+            <Text fill="WHITE" layoutX="14.0" layoutY="249.0" strokeType="OUTSIDE" strokeWidth="0.0" text="🔧">
+               <font>
+                  <Font name="System Bold" size="50.0" />
+               </font>
+            </Text>
+            <Text fill="WHITE" layoutX="236.0" layoutY="246.0" strokeType="OUTSIDE" strokeWidth="0.0" text="🔨">
+               <font>
+                  <Font name="System Bold" size="50.0" />
+               </font>
+            </Text>
+            </children>
+        </AnchorPane>
+    </center>
+</BorderPane>
