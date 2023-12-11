@@ -96,7 +96,7 @@ public class BattleshipBoard {
             else {
                 shipSize = i + 1;
             }
-            System.out.println("Debug: i=" + i + ", shipSize=" + shipSize);
+            //System.out.println("Debug: i=" + i + ", shipSize=" + shipSize);
         
             boolean invalidPlacement = true;
         
@@ -253,7 +253,7 @@ public class BattleshipBoard {
             else {
                 shipSize = i + 1;
             }
-            System.out.println("Debug: i=" + i + ", shipSize=" + shipSize);
+            //System.out.println("Debug: i=" + i + ", shipSize=" + shipSize);
         
             boolean invalidPlacement = true;
         

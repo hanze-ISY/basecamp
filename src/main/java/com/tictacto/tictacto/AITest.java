@@ -62,7 +62,7 @@ public class AITest {
 
                 aiBoard.updateBoards(move, "player", result, sunkShipSize);
                 playerBoard.updateBoards(move, "player", result, sunkShipSize);
-                System.out.print(playerBoard.getOppShips());
+                //System.out.print(playerBoard.getOppShips());
                 System.out.println(playerBoard.oppToString());
 
                 PLAYER_TURN = false;
@@ -130,7 +130,7 @@ public class AITest {
                 }
     
                 if (isVertical && (move >= start && move <= end) && (move % 8 - start % 8 == 0)) {
-                    System.out.println(size + " vertical");
+                    //System.out.println(size + " vertical");
                     // Check if the ship is sunk
                     boolean shipSunk = true;
                     for (int i = start; i <= end; i += 8) {
@@ -146,7 +146,7 @@ public class AITest {
                     }
                 }
                 else if(isHorizontal && (move >= start && move <= end)) {
-                    System.out.println(size + "horizontal");
+                    //System.out.println(size + "horizontal");
                     // Check if the ship is sunk
                     boolean shipSunk = true;
                     for (int i = start; i <= end; i++) {
