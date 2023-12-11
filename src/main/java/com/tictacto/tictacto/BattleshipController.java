@@ -112,7 +112,7 @@ public class BattleshipController {
                     int index = extractIndexFromData(data);
                     String playerName = extractPlayerNameFromData(data);
                     // Update boards based on the result
-                    battleshipBoard.updateBoards(index, playerName, result);
+                    //battleshipBoard.updateBoards(index, playerName, result);
 
                     currentState = Objects.equals(Session.getInstance().getUsername(), playerName) ? GameState.OPPONENTS_TURN : GameState.YOUR_TURN;
                 }

@@ -1,5 +1,8 @@
 package com.tictacto.tictacto;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 
 public class BattleshipBoard {
@@ -12,8 +15,13 @@ public class BattleshipBoard {
 
     private char[] board;
     private char[] oppBoard;
-    private int[] remainingShips = {1, 1, 1, 1}; // One ship of each size: 2, 3, 4, 6
+    private int[] remainingShips = {1, 1, 1, 1}; // One ship of each size: 2, 3, 4, 6 (For ship placement)
+    private int[] opponentShips = {1, 1, 1, 1}; //For tracking opponent ships by AI
+    private int[] playerShips = {1, 1, 1, 1}; //For tracking player ships
+    private Map<Integer, int[]> shipPositions = new HashMap<>();
     private int boardWidth = 8;
+    private int AIState = 0; //0 is random, 1 is targeted
+    private int lastHit = 0;
 
     public BattleshipBoard(Server server, String playerName) {
         this.playerName = playerName;
@@ -34,6 +42,26 @@ public class BattleshipBoard {
         }
     }
 
+    public char[] getBoard() {
+        return this.board;
+    }
+
+    public void editCell(int index, char symbol) {
+        this.board[index] = symbol;
+    }
+
+    public Map<Integer, int[]> getShipPositions() {
+        return this.shipPositions;
+    }
+
+    public String getOppShips() {
+        StringBuilder string = new StringBuilder();
+        for(int i=0; i<opponentShips.length; i++) {
+            string.append(opponentShips[i]);
+        }
+        return string.toString();
+    }
+
     //reset game board
     public void resetBoard() {
         for (int i = 0; i < board.length; i++) {
@@ -42,6 +70,17 @@ public class BattleshipBoard {
         for (int i = 0; i < oppBoard.length; i++) {
             oppBoard[i] = WATER;
         }
+        //Reset opponent ship counter
+        for(int i = 0; i < opponentShips.length; i++){
+            opponentShips[i] = 1;
+        }
+    }
+
+    public boolean gameOver() {
+        if(playerShips[0] == 0 && playerShips[1] == 0 && playerShips[2] == 0 && playerShips[3] == 0) {
+            return true;
+        }
+        return false;
     }
 
     public void placeShips() {
@@ -75,7 +114,8 @@ public class BattleshipBoard {
                     System.out.println("Invalid ship placement, please try again");
                 }
             }
-        
+            
+            shipPositions.put(shipSize, new int[]{start, end});
             placeSingleShip(start, end);
             System.out.println(this.toString());
         }
@@ -144,7 +184,7 @@ public class BattleshipBoard {
     }
 
     private void placeSingleShip(int start, int end) {
-        String request = String.format("place [%d, %d]", start, end);
+        String request = String.format("place %d %d", start, end);
         // Place ship based on start and end indices
         int direction = (start < end) ? 1 : -1;
         int step = (start / boardWidth == end / boardWidth) ? direction : direction * boardWidth;
@@ -154,40 +194,157 @@ public class BattleshipBoard {
         }
     }
 
-    //Only for inccoming hits from server(opponent)
-    public void incomingShot(int index) {
-        if(board[index] == 'S') {
-            System.out.println("A ship has been hit");
-            board[index] = HIT;
-        }
-        else {
-            System.out.println("The shot missed");
-        }
-        System.out.println(this.toString());
-    }
-
     public void makeShot(int index) {
         //Send request to server
         String request = String.format("move %d", index);
         server.SendCommand(request);
     }
 
-    //update opponent board based on received server response
-    public void updateBoards(int index, String player, String result) {
+    //update boards based on received server response
+    public void updateBoards(int index, String player, String result, int length) {
+        int shipSize = 0;
+        if(length == 6) {
+            shipSize = 3;
+        } else {
+            shipSize = length - 2;
+        }
+
         if (player.equals(playerName)) {
             if ("PLONS".equals(result)) {
                 oppBoard[index] = HIT;
+                AIState = 1;
+                lastHit = index;
+            } else if ("GEZONKEN".equals(result)) {
+                oppBoard[index] = HIT;
+                opponentShips[shipSize] = 0;
+                AIState = 0;
+                lastHit = index;
             } else {
                 oppBoard[index] = EMPTY;
             }
         } else if (!"unknown".equals(player)) {
             if ("PLONS".equals(result)) {
                 board[index] = HIT;
+            } else if ("GEZONKEN".equals(result)) {
+                board[index] = HIT;
+                playerShips[shipSize] = 0;
             } else {
                 board[index] = EMPTY;
             }
         }
-        System.out.println(this.oppToString());
+    }
+
+    //Get symbol at given board index
+    public char getSymbol(int index){
+        return this.board[index];
+    }
+
+    //Determine ship placement for AI, for now randomized
+    public void aiPlaceShips(){
+        Random random = new Random();
+        int start = 0;
+        int end = 0;
+    
+        for (int i = 1; i <= remainingShips.length; i++) {
+            int shipSize;
+            if(i == 4){
+                shipSize = i + 2;
+            }
+            else {
+                shipSize = i + 1;
+            }
+            System.out.println("Debug: i=" + i + ", shipSize=" + shipSize);
+        
+            boolean invalidPlacement = true;
+        
+            while (invalidPlacement && remainingShips[i - 1] > 0) {
+                //System.out.println("Now placing 1x" + shipSize + " ship\n");
+                start = random.nextInt(board.length);
+
+                boolean horizontal = random.nextBoolean();
+                if (horizontal) {
+                    end = start + shipSize - 1;
+                } else {
+                    end = start + (shipSize - 1) * boardWidth;
+                }
+        
+                if (checkPlacement(start, end, shipSize)) {
+                    shipPositions.put(shipSize, new int[]{start, end});
+                    placeSingleShip(start, end);
+                    invalidPlacement = false;
+                    remainingShips[i - 1] = 0;  // Set count for this ship size to 0
+                }
+            }
+        }
+    }
+
+    //Determine best move for AI. Basic AI for now
+    public int aiMove(){
+        Random random = new Random();
+        int move = 99;
+        int badMoves = 0;
+
+        if(AIState == 0) {
+            while(!validMove(move)) {
+                move = random.nextInt(64);
+            }
+        } else {
+            int potentialCells[] = {lastHit + 1, lastHit - 1, lastHit - 8, lastHit + 8};
+            for(int i = 0; i < potentialCells.length; i++) {
+                if(validMove(potentialCells[i])) {
+                    move = potentialCells[i];  
+                }
+                else {
+                    badMoves += 1;
+                }
+            }
+            if(badMoves == 4) {
+                while(!validMove(move)) {
+                    move = random.nextInt(64);
+                }
+            } 
+        }
+        return move;
+    }
+
+    //Heatmap generator WIP
+    private Map<Integer, Integer> evaluateBoard() {
+        Map<Integer, Integer> cellScores = new HashMap<>();
+
+        if(AIState == 0) {
+            for (int i = 0; i < 64; i++) {
+                if(oppBoard[i] == 'X' || oppBoard[i] == 'O') { //If hit or empty, never pick this cell
+                    cellScores.put(i, 0); 
+                } else { //Firing randomly
+                    cellScores.put(i, 50);
+                }
+            }
+        } else {
+            for (int i = 0; i < 64; i++) {
+                if(oppBoard[i] == 'X' || oppBoard[i] == 'O') { //If hit or empty, never pick this cell
+                    cellScores.put(i, 0);
+                } else {
+                    //cellScores.put(i, targetModeProbability(i));
+                }
+            }
+        }
+        return cellScores;
+    }
+
+    //WIP
+    //private int targetModeProbability(int move) {
+
+    //}
+
+    //Determine validity of a move
+    private boolean validMove(int move) {
+        if(move > board.length - 1 || move < 0) {
+            return false;
+        }
+        if(oppBoard[move] == 'X' || oppBoard[move] == 'O') {
+            return false;
+        }
+        return true;
     }
 
     public String oppToString(){
