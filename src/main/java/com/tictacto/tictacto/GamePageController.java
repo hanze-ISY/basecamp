@@ -1,7 +1,6 @@
 package com.tictacto.tictacto;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -17,10 +16,9 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 enum GameState {
     WAITING_FOR_OPPONENT,
@@ -30,6 +28,7 @@ enum GameState {
     YOU_LOST,
     DRAW
 }
+
 public class GamePageController {
     private final Server server = Server.getInstance();
     @FXML
@@ -48,6 +47,7 @@ public class GamePageController {
         startDataFetchingTask();
         ChallengePopups.startListening();
     }
+
     private void updateStateHeader() {
         switch (currentState) {
             case WAITING_FOR_OPPONENT:
@@ -73,75 +73,47 @@ public class GamePageController {
 
     public void initialize() {
         userLabel.setText(Session.getInstance().getUsername());
+        Platform.runLater(this::updateStateHeader);
     }
 
     private void startDataFetchingTask() {
-        server.AddEventListener(event -> {
-            String data = event.getData();
-            if (data.startsWith("PLAYERLIST")) {
-                // return data is a JSONified array with strings, denoting usernames
-                // substring(11) removes the "PLAYERLIST " part
-                // e.g. PLAYERLIST ["user1", "user2", "user3"] -> ["user1", "user2", "user3"]
-                String[] players = data
-                        .substring(11)
-                        .replace("[", "")
-                        .replace("]", "")
-                        .replace("\"", "")
-                        .split(", ");
-                // TODO: update the UI with the new playerlist
-                Platform.runLater(() -> dataLabel.setText(Arrays.toString(players)));
-            }
-//            if (data.startsWith("GAME YOURTURN")) {
-//                // its our turn!
-//                currentState = GameState.YOUR_TURN;
-//            }
-            if (data.startsWith("GAME MATCH")) {
-                // the game has started!
-                currentState = data.contains("PLAYERTOMOVE: \"" + Session.getInstance().getUsername() + "\"") ? GameState.YOUR_TURN : GameState.OPPONENTS_TURN;
-                Platform.runLater(this::resetAllTiles);
-            }
-            if (data.startsWith("GAME MOVE")) {
-                // the opponent has made a move.
-                // a move looks like this: GAME MOVE {PLAYER: "jemola", MOVE: "0", DETAILS: ""}
-                // substring(10) removes the "GAME MOVE " part
-                // e.g. GAME MOVE {PLAYER: "jemola", MOVE: "0", DETAILS: ""} -> {PLAYER: "jemola", MOVE: "0", DETAILS: ""}
-                // the arguments are not necessarily in this order, so a map is used to store them in whichever order they come in
-                // be careful with the "DETAILS" argument, it can be empty
-                Map<String, String> move = Arrays
-                        .stream(data
-                                .substring(10)
-                                .replace("{", "")
-                                .replace("}", "")
-                                .replace("\"", "")
-                                .split(", ")
-                        ).collect(() -> {
-                            Map<String, String> map = new java.util.HashMap<>();
-                            map.put("PLAYER", "");
-                            map.put("MOVE", "");
-                            map.put("DETAILS", "");
-                            return map;
-                        }, (map, s) -> {
-                            String[] split = s.split(": ");
-                            if (split.length == 1) {
-                                map.put(split[0], "");
-                            } else {
-                                map.put(split[0], split[1]);
-                            }
-                        }, Map::putAll);
-                Platform.runLater(() -> changeTile((Pane) state.getScene().lookup("#" + move.get("MOVE"))));
-                currentState = Objects.equals(Session.getInstance().getUsername(), move.get("PLAYER")) ? GameState.YOUR_TURN : GameState.OPPONENTS_TURN;
-            }
-            if (data.startsWith("GAME LOSS")) {
-                currentState = GameState.YOU_LOST;
-            }
-            if (data.startsWith("GAME WIN")) {
-                currentState = GameState.YOU_WON;
-            }
-            if (data.startsWith("GAME DRAW")) {
-                currentState = GameState.DRAW;
-            }
+        server.AddEventListener(ServerEvents.PLAYER_LIST, event -> {
+            HashMap<String, String> data = event.getData();
+            // TODO: update the player list
+            Platform.runLater(() -> dataLabel.setText(Arrays.toString(data.get("LIST").split(" "))));
+        });
+        server.AddEventListener(ServerEvents.LOSE, event -> {
+            currentState = GameState.YOU_LOST;
             Platform.runLater(this::updateStateHeader);
         });
+        server.AddEventListener(ServerEvents.WIN, event -> {
+            currentState = GameState.YOU_WON;
+            Platform.runLater(this::updateStateHeader);
+        });
+        server.AddEventListener(ServerEvents.MOVE, event -> {
+            HashMap<String, String> data = event.getData();
+            Platform.runLater(() -> changeTile((Pane) state.getScene().lookup("#" + data.get("MOVE"))));
+            currentState = Objects.equals(Session.getInstance().getUsername(), data.get("PLAYER")) ? GameState.YOUR_TURN : GameState.OPPONENTS_TURN;
+            Platform.runLater(this::updateStateHeader);
+        });
+        server.AddEventListener(ServerEvents.YOUR_TURN, event -> {
+            currentState = GameState.YOUR_TURN;
+            Platform.runLater(this::updateStateHeader);
+        });
+        server.AddEventListener(ServerEvents.DRAW, event -> {
+            currentState = GameState.DRAW;
+            Platform.runLater(this::updateStateHeader);
+        });
+        server.AddEventListener(ServerEvents.NEW_MATCH, event -> {
+            HashMap<String, String> data = event.getData();
+            currentState =
+                    data.get("PLAYERTOMOVE").equals(Session.getInstance().getUsername())
+                            ? GameState.YOUR_TURN
+                            : GameState.OPPONENTS_TURN;
+            Platform.runLater(this::updateStateHeader);
+            Platform.runLater(this::resetAllTiles);
+        });
+
         new Thread(new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -168,7 +140,6 @@ public class GamePageController {
             return;
         }
         server.SendCommand("move " + pane.getId());
-        changeTile(e);
     }
 
     public void challengePlayer(ActionEvent e) {
@@ -191,6 +162,7 @@ public class GamePageController {
         label.setAlignment(javafx.geometry.Pos.CENTER);
         pane.getChildren().add(label);
     }
+
     private void changeTile(Pane pane) {
         // add "X" or "O" to the pane, the label should be the same size as the pane, and the text should be as big
         // as possible, and centered

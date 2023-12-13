@@ -1,16 +1,23 @@
 package com.tictacto.tictacto;
 
 import java.util.EventObject;
+import java.util.HashMap;
 
 public class DataEvent extends EventObject {
-    private final String data;
+    private final HashMap<String, String> data;
+    private final ServerEvents type;
 
-    public DataEvent(Object source, String data) {
+    public DataEvent(Object source, HashMap<String, String> data, ServerEvents type) {
         super(source);
         this.data = data;
+        this.type = type;
     }
 
-    public String getData() {
-        return data;
+    public HashMap<String, String> getData() {
+        return this.data;
+    }
+
+    public ServerEvents getType() {
+       return this.type;
     }
 }
