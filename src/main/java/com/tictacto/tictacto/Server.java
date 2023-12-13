@@ -42,7 +42,7 @@ public class Server {
             //   - "SVR GAME CHALLENGE { CHALLENGER: <username>, GAMETYPE: <gametype>, CHALLENGENUMBER: <id> }"
             //   - "SVR GAME CHALLENGE CANCELLED { CHALLENGENUMBER: <id> }"
 
-            new Thread(() -> {
+            Thread serverMessages = new Thread(() -> {
                 try {
                     String response;
                     while ((response = in.readLine()) != null) {
@@ -104,7 +104,9 @@ public class Server {
                     CloseConnection();
                     Thread.currentThread().interrupt();
                 }
-            }).start();
+            });
+            serverMessages.setDaemon(true);
+            serverMessages.start();
 
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -114,15 +114,17 @@ public class GamePageController {
             Platform.runLater(this::resetAllTiles);
         });
 
-        new Thread(new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                while (true) {
-                    server.SendCommand("get playerlist");
+        Thread playerTask = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
                     Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-        }).start();
+        });
+        playerTask.setDaemon(true);
+        playerTask.start();
     }
 
     public void ButtonClick(MouseEvent e) throws IOException {
