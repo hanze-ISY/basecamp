@@ -149,20 +149,6 @@ public class GamePageController {
         server.SendCommand(challengeRequest);
     }
 
-    private void changeTile(MouseEvent e) {
-        Pane pane = (Pane) e.getSource();
-        // add "X" or "O" to the pane, the label should be the same size as the pane, and the text should be as big
-        // as possible, and centered
-        Label label = new Label(currentState == GameState.YOUR_TURN ? "X" : "O");
-        currentState = currentState == GameState.YOUR_TURN ? GameState.OPPONENTS_TURN : GameState.YOUR_TURN;
-        label.setPrefSize(pane.getWidth(), pane.getHeight());
-        label.setTextFill(Color.WHITE);
-        label.getFont();
-        label.setFont(Font.font(pane.getHeight() / 2));
-        label.setAlignment(javafx.geometry.Pos.CENTER);
-        pane.getChildren().add(label);
-    }
-
     private void changeTile(Pane pane) {
         // add "X" or "O" to the pane, the label should be the same size as the pane, and the text should be as big
         // as possible, and centered
