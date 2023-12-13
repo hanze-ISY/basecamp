@@ -1,7 +1,6 @@
 package com.tictacto.tictacto;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -77,34 +76,34 @@ public class GamePageController {
     }
 
     private void startDataFetchingTask() {
-        server.AddEventListener(ServerEvents.PLAYER_LIST, event -> {
+        server.addEventListener(ServerEvents.PLAYER_LIST, event -> {
             HashMap<String, String> data = event.getData();
             // TODO: update the player list
             Platform.runLater(() -> dataLabel.setText(Arrays.toString(data.get("LIST").split(" "))));
         });
-        server.AddEventListener(ServerEvents.LOSE, event -> {
+        server.addEventListener(ServerEvents.LOSE, event -> {
             currentState = GameState.YOU_LOST;
             Platform.runLater(this::updateStateHeader);
         });
-        server.AddEventListener(ServerEvents.WIN, event -> {
+        server.addEventListener(ServerEvents.WIN, event -> {
             currentState = GameState.YOU_WON;
             Platform.runLater(this::updateStateHeader);
         });
-        server.AddEventListener(ServerEvents.MOVE, event -> {
+        server.addEventListener(ServerEvents.MOVE, event -> {
             HashMap<String, String> data = event.getData();
             Platform.runLater(() -> changeTile((Pane) state.getScene().lookup("#" + data.get("MOVE"))));
             currentState = Objects.equals(Session.getInstance().getUsername(), data.get("PLAYER")) ? GameState.YOUR_TURN : GameState.OPPONENTS_TURN;
             Platform.runLater(this::updateStateHeader);
         });
-        server.AddEventListener(ServerEvents.YOUR_TURN, event -> {
+        server.addEventListener(ServerEvents.YOUR_TURN, event -> {
             currentState = GameState.YOUR_TURN;
             Platform.runLater(this::updateStateHeader);
         });
-        server.AddEventListener(ServerEvents.DRAW, event -> {
+        server.addEventListener(ServerEvents.DRAW, event -> {
             currentState = GameState.DRAW;
             Platform.runLater(this::updateStateHeader);
         });
-        server.AddEventListener(ServerEvents.NEW_MATCH, event -> {
+        server.addEventListener(ServerEvents.NEW_MATCH, event -> {
             HashMap<String, String> data = event.getData();
             currentState =
                     data.get("PLAYERTOMOVE").equals(Session.getInstance().getUsername())
@@ -141,14 +140,14 @@ public class GamePageController {
         if (!pane.getChildren().isEmpty()) {
             return;
         }
-        server.SendCommand("move " + pane.getId());
+        server.sendCommand("move " + pane.getId());
     }
 
     public void challengePlayer(ActionEvent e) {
         String challengeName = challengeNameField.getText().toLowerCase();
         String spelType = "Tic-tac-toe";
         String challengeRequest = "challenge " + challengeName + " " + spelType;
-        server.SendCommand(challengeRequest);
+        server.sendCommand(challengeRequest);
     }
 
     private void changeTile(Pane pane) {
@@ -175,7 +174,7 @@ public class GamePageController {
     }
 
     public void logout(ActionEvent e) throws IOException {
-        server.CloseConnection();
+        server.closeConnection();
         Platform.exit();
     }
 }

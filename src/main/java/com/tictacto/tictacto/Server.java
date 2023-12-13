@@ -101,7 +101,7 @@ public class Server {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 } finally {
-                    CloseConnection();
+                    closeConnection();
                     Thread.currentThread().interrupt();
                 }
             });
@@ -139,21 +139,21 @@ public class Server {
         return instance;
     }
 
-    public void SendCommand(String command) {
+    public void sendCommand(String command) {
         System.out.println("Sending command: " + command);
         out.println(command);
     }
 
     // event handlers
-    public void AddEventListener(ServerEvents type, DataEventListener listener) {
+    public void addEventListener(ServerEvents type, DataEventListener listener) {
         listeners.computeIfAbsent(type, k -> new ArrayList<>()).add(listener);
     }
 
-    public void RemoveEventListener(ServerEvents type, DataEventListener listener) {
+    public void removeEventListener(ServerEvents type, DataEventListener listener) {
         listeners.get(type).remove(listener);
     }
 
-    public void CloseConnection() {
+    public void closeConnection() {
         try {
             in.close();
             out.close();

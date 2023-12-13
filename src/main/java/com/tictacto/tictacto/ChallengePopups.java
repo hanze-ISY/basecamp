@@ -7,10 +7,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ChallengePopups {
     private static boolean running = false;
@@ -27,7 +24,7 @@ public class ChallengePopups {
     public static void startListening() {
         if (!running) {
             running = true;
-            server.AddEventListener(ServerEvents.CHALLENGE, event -> {
+            server.addEventListener(ServerEvents.CHALLENGE, event -> {
                 challenge = event.getData();
                 Platform.runLater(() -> {
                     try {
@@ -50,7 +47,7 @@ public class ChallengePopups {
 
     public void acceptChallenge(MouseEvent mouseEvent) {
         String id = challenge.get("CHALLENGENUMBER");
-        server.SendCommand("challenge accept " + id);
+        server.sendCommand("challenge accept " + id);
         // close the modal
         Scene scene = playername.getScene();
         scene.getWindow().hide();

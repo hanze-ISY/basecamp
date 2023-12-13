@@ -26,10 +26,10 @@ public class UserNameController {
     public void login(ActionEvent e) {
         String text = textLogin.getText();
         Server server = Server.getInstance();
-        server.AddEventListener(ServerEvents.ERROR, event -> {
+        server.addEventListener(ServerEvents.ERROR, event -> {
             Platform.runLater(() -> errorMessageLabel.setText(event.getData().get("ERROR")));
         });
-        server.AddEventListener(ServerEvents.OK, new DataEventListener() {
+        server.addEventListener(ServerEvents.OK, new DataEventListener() {
             @Override
             public void data(DataEvent event) {
                 Session session = Session.getInstance();
@@ -40,14 +40,14 @@ public class UserNameController {
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
-                Platform.runLater(() -> server.RemoveEventListener(ServerEvents.OK, this));
+                Platform.runLater(() -> server.removeEventListener(ServerEvents.OK, this));
             }
         });
 
         if (text.isEmpty()) {
             errorMessageLabel.setText("Voer een naam in.");
         } else {
-            server.SendCommand("login " + '"' + text.toLowerCase() + '"');
+            server.sendCommand("login " + '"' + text.toLowerCase() + '"');
         }
     }
 }
