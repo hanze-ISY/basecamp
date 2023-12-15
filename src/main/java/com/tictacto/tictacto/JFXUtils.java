@@ -31,17 +31,15 @@ public interface JFXUtils {
         shakeTransition.play();
     }
     static void Navigate(String fxml, Stage current) throws IOException {
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    FXMLLoader fxmlLoader = new FXMLLoader(JFXUtils.class.getResource(fxml));
-                    Scene scene = new Scene(fxmlLoader.load());
-                    current.setScene(scene);
-                    current.show();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader(JFXUtils.class.getResource(fxml));
+                Scene scene = new Scene(fxmlLoader.load());
+                current.setScene(scene);
+                current.setMaximized(true); // set window to fullscreen
+                current.show();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
     }
