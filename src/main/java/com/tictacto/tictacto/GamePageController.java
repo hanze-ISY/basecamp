@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -174,7 +175,11 @@ public class GamePageController {
     }
 
     public void logout(ActionEvent e) throws IOException {
-        server.closeConnection();
+//        server.closeConnection();
         Platform.exit();
+    }
+
+    public void switchGame(ActionEvent e) throws IOException {
+        JFXUtils.Navigate("gamechoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
     }
 }
