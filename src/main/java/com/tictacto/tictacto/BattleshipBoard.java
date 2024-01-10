@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 public class BattleshipBoard {
     private static final char WATER = '-';
@@ -18,6 +19,7 @@ public class BattleshipBoard {
     private int[] remainingShips = {1, 1, 1, 1}; // One ship of each size: 2, 3, 4, 6 (For ship placement)
     private int[] opponentShips = {1, 1, 1, 1}; //For tracking opponent ships by AI
     private int[] playerShips = {1, 1, 1, 1}; //For tracking player ships
+    private boolean shipsPlaced = false;
     private Map<Integer, int[]> shipPositions = new HashMap<>();
     private int boardWidth = 8;
     private int AIState = 0; //0 is random, 1 is targeted
@@ -40,6 +42,14 @@ public class BattleshipBoard {
         for (int i = 0; i < oppBoard.length; i++) {
             oppBoard[i] = WATER;
         }
+    }
+
+    public boolean shipsPlaced() {
+        return shipsPlaced;
+    }
+
+    public String getPlayerName() {
+        return playerName;
     }
 
     public char[] getBoard() {
@@ -74,6 +84,7 @@ public class BattleshipBoard {
         for(int i = 0; i < opponentShips.length; i++){
             opponentShips[i] = 1;
         }
+        shipsPlaced = false;
     }
 
     public boolean gameOver() {
@@ -197,7 +208,7 @@ public class BattleshipBoard {
     public void makeShot(int index) {
         //Send request to server
         String request = String.format("move %d", index);
-        server.SendCommand(request);
+        //server.SendCommand(request);
     }
 
     //update boards based on received server response
@@ -205,12 +216,12 @@ public class BattleshipBoard {
         int shipSize = 0;
         if(length == 6) {
             shipSize = 3;
-        } else {
+        } else if(length < 6) {
             shipSize = length - 2;
         }
 
         if (player.equals(playerName)) {
-            if ("PLONS".equals(result)) {
+            if ("BOEM".equals(result)) {
                 oppBoard[index] = HIT;
                 AIState = 1;
                 lastHit = index;
@@ -223,7 +234,7 @@ public class BattleshipBoard {
                 oppBoard[index] = EMPTY;
             }
         } else if (!"unknown".equals(player)) {
-            if ("PLONS".equals(result)) {
+            if ("BOEM".equals(result)) {
                 board[index] = HIT;
             } else if ("GEZONKEN".equals(result)) {
                 board[index] = HIT;
@@ -273,9 +284,11 @@ public class BattleshipBoard {
                     placeSingleShip(start, end);
                     invalidPlacement = false;
                     remainingShips[i - 1] = 0;  // Set count for this ship size to 0
+                    server.sendCommand("place " + start + " " + end);
                 }
             }
         }
+        shipsPlaced = true;
     }
 
     //Determine best move for AI. Basic AI for now
