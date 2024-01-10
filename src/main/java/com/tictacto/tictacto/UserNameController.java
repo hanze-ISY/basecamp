@@ -36,7 +36,7 @@ public class UserNameController {
                 session.setUsername(text.toLowerCase());
 
                 try {
-                    JFXUtils.Navigate("GameChoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+                    JFXUtils.Navigate("gamechoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }

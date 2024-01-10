@@ -175,17 +175,11 @@ public class GamePageController {
     }
 
     public void logout(ActionEvent e) throws IOException {
-        server.closeConnection();
+//        server.closeConnection();
         Platform.exit();
     }
 
-    public void changeBattelship(ActionEvent e) throws IOException {
-        try {
-            JFXUtils.Navigate("gamepagebattelship.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
-        } catch (IOException ioException) {
-            ioException.printStackTrace();
-        }
+    public void switchGame(ActionEvent e) throws IOException {
+        JFXUtils.Navigate("gamechoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
     }
-
-
 }
