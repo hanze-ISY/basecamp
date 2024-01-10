@@ -25,7 +25,7 @@ public class GamePageBattelshipController {
 
     public void challengePlayer(ActionEvent e) {
         String challengeName = challengeNameField.getText().toLowerCase();
-        String spelType = "Tic-tac-toe";
+        String spelType = "Battleship";
         String challengeRequest = "challenge " + challengeName + " " + spelType;
         server.sendCommand(challengeRequest);
     }
