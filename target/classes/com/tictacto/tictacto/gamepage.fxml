@@ -111,16 +111,20 @@
                                 <Font size="18.0" />
                             </font>
                         </Text>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox alignment="BASELINE_LEFT" minWidth="-Infinity" prefHeight="100.0" prefWidth="200.0">
                             <children>
-                                <Button minWidth="0.0" mnemonicParsing="false" onAction="#logout" prefHeight="25.0" prefWidth="54.0" text="Logout" textFill="WHITE">
+                                <Button alignment="CENTER" minWidth="0.0" mnemonicParsing="false" onAction="#logout" prefHeight="25.0" prefWidth="54.0" text="Logout" textFill="WHITE">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" top="10.0" />
+                                        <Insets bottom="5.0" right="10.0" top="10.0" />
                                     </HBox.margin>
                                     <cursor>
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
+                                <Button alignment="CENTER" mnemonicParsing="false" onAction="#switchGame" text="Switch Game" textFill="WHITE">
+                                    <cursor>
+                                        <Cursor fx:constant="HAND" />
+                                    </cursor></Button>
                             </children>
                         </HBox>
                     </children>
