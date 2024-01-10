@@ -111,7 +111,7 @@
                                 <Font size="18.0" />
                             </font>
                         </Text>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox alignment="CENTER" minWidth="-Infinity" prefHeight="48.0" prefWidth="180.0">
                             <children>
                                 <Button minWidth="0.0" mnemonicParsing="false" onAction="#logout" prefHeight="25.0" prefWidth="54.0" text="Logout" textFill="WHITE">
                                     <HBox.margin>
@@ -121,7 +121,15 @@
                                         <Cursor fx:constant="HAND" />
                                     </cursor>
                                 </Button>
+                        <Button id="battelshipbutton" mnemonicParsing="false" onAction="#changeBattelship" text="battelship">
+                           <HBox.margin>
+                              <Insets left="55.0" top="10.0" />
+                           </HBox.margin>
+                        </Button>
                             </children>
+                     <VBox.margin>
+                        <Insets left="-1.0" />
+                     </VBox.margin>
                         </HBox>
                     </children>
                     <HBox.margin>
@@ -132,7 +140,7 @@
         </HBox>
     </top>
     <center>
-        <GridPane BorderPane.alignment="CENTER" id="gameboard">
+        <GridPane id="gameboard" BorderPane.alignment="CENTER">
             <columnConstraints>
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />

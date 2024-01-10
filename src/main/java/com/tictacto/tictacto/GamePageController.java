@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -177,4 +178,14 @@ public class GamePageController {
         server.closeConnection();
         Platform.exit();
     }
+
+    public void changeBattelship(ActionEvent e) throws IOException {
+        try {
+            JFXUtils.Navigate("gamepagebattelship.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+
 }
