@@ -1,5 +1,7 @@
 package nl.picobello.basecamp.battleship;
 
+import nl.picobello.basecamp.shared.Server;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;

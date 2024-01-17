@@ -13,21 +13,13 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import nl.picobello.basecamp.shared.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
-
-enum GameState {
-    WAITING_FOR_OPPONENT,
-    YOUR_TURN,
-    OPPONENTS_TURN,
-    YOU_WON,
-    YOU_LOST,
-    DRAW
-}
 
 public class BattleShipController {
     private final Server server = Server.getInstance();
@@ -185,6 +177,6 @@ public class BattleShipController {
     }
 
     public void switchGame(ActionEvent e) throws IOException {
-        JFXUtils.Navigate("gamechoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+        JFXUtils.Navigate(this.getClass().getResource("gamechoice.fxml"), (Stage) ((Node) e.getSource()).getScene().getWindow());
     }
 }

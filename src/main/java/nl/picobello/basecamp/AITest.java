@@ -1,4 +1,7 @@
-package com.tictacto.tictacto;
+package nl.picobello.basecamp;
+
+import nl.picobello.basecamp.battleship.*;
+import nl.picobello.basecamp.shared.*;
 
 import java.util.Map;
 import java.util.Scanner;

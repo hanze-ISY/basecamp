@@ -12,11 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-<<<<<<< HEAD:src/main/java/com/tictacto/tictacto/GamePageController.java
 import javafx.stage.Stage;
-=======
 import nl.picobello.basecamp.shared.*;
->>>>>>> origin/remco/dev:src/main/java/nl/picobello/basecamp/tictactoe/TicTacToeController.java
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -175,6 +172,6 @@ public class TicTacToeController {
     }
 
     public void switchGame(ActionEvent e) throws IOException {
-        JFXUtils.Navigate("gamechoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+        JFXUtils.Navigate(this.getClass().getResource("gamechoice.fxml"), (Stage) ((Node) e.getSource()).getScene().getWindow());
     }
 }

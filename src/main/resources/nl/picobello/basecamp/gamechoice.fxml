@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="1080.0" prefWidth="1920.0" styleClass="main-background" stylesheets="@App.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tictacto.tictacto.GameChoiceController">
+<BorderPane prefHeight="1080.0" prefWidth="1920.0" styleClass="main-background" stylesheets="@App.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.picobello.basecamp.shared.GameChoiceController">
    <top>
       <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Spel Kiezen" textAlignment="CENTER" wrappingWidth="2041.533203125" BorderPane.alignment="CENTER">
          <font>

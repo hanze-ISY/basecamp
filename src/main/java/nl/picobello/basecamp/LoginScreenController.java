@@ -36,7 +36,7 @@ public class LoginScreenController {
                 session.setUsername(text.toLowerCase());
 
                 try {
-                    JFXUtils.Navigate("tictactoe.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+                    JFXUtils.Navigate(this.getClass().getResource("gamechoice.fxml") ,(Stage) ((Node) e.getSource()).getScene().getWindow());
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }

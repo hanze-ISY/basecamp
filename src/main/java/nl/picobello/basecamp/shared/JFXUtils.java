@@ -3,12 +3,14 @@ package nl.picobello.basecamp.shared;
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
+import java.net.URL;
 
 public interface JFXUtils {
     static void ShowChallengeNotification() throws IOException {
@@ -28,11 +30,13 @@ public interface JFXUtils {
         stage.show();
         shakeTransition.play();
     }
-    static void Navigate(String fxml, Stage current) throws IOException {
+    static void Navigate(URL fxml, Stage current) throws IOException {
         Platform.runLater(() -> {
             try {
-                FXMLLoader fxmlLoader = new FXMLLoader(JFXUtils.class.getResource(fxml));
-                Scene scene = new Scene(fxmlLoader.load());
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setLocation(fxml);
+                Parent root = fxmlLoader.load();
+                Scene scene = new Scene(root);
                 current.setScene(scene);
                 current.setMaximized(true); // set window to fullscreen
                 current.show();
