@@ -1,4 +1,4 @@
-package com.tictacto.tictacto;
+package nl.picobello.basecamp.battleship;
 
 import java.util.HashMap;
 import java.util.Map;
