@@ -1,4 +1,4 @@
-package com.tictacto.tictacto;
+package nl.picobello.basecamp;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -9,10 +9,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import nl.picobello.basecamp.shared.*;
 
 import java.io.IOException;
 
-public class UserNameController {
+public class LoginScreenController {
 
     private Stage stage;
     private Scene scene;
@@ -22,7 +23,6 @@ public class UserNameController {
     private TextField textLogin;
     @FXML
     private Label errorMessageLabel;
-
     public void login(ActionEvent e) {
         String text = textLogin.getText();
         Server server = Server.getInstance();
@@ -36,7 +36,7 @@ public class UserNameController {
                 session.setUsername(text.toLowerCase());
 
                 try {
-                    JFXUtils.Navigate("gamechoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+                    JFXUtils.Navigate("tictactoe.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }

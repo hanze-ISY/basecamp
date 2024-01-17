@@ -1,4 +1,4 @@
-package com.tictacto.tictacto;
+package nl.picobello.basecamp.shared;
 
 public interface DataEventListener {
     void data(DataEvent event);

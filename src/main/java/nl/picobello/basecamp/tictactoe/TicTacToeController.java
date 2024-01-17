@@ -1,4 +1,4 @@
-package com.tictacto.tictacto;
+package nl.picobello.basecamp.tictactoe;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -12,7 +12,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+<<<<<<< HEAD:src/main/java/com/tictacto/tictacto/GamePageController.java
 import javafx.stage.Stage;
+=======
+import nl.picobello.basecamp.shared.*;
+>>>>>>> origin/remco/dev:src/main/java/nl/picobello/basecamp/tictactoe/TicTacToeController.java
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -20,16 +24,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 
-enum GameState {
-    WAITING_FOR_OPPONENT,
-    YOUR_TURN,
-    OPPONENTS_TURN,
-    YOU_WON,
-    YOU_LOST,
-    DRAW
-}
-
-public class GamePageController {
+public class TicTacToeController {
     private final Server server = Server.getInstance();
     @FXML
     public Text state;
@@ -43,7 +38,7 @@ public class GamePageController {
     private TextField challengeNameField;
     private GameState currentState = GameState.WAITING_FOR_OPPONENT;
 
-    public GamePageController() {
+    public TicTacToeController() {
         startDataFetchingTask();
         ChallengePopups.startListening();
     }

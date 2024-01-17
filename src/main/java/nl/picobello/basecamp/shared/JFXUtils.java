@@ -1,16 +1,14 @@
-package com.tictacto.tictacto;
+package nl.picobello.basecamp.shared;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public interface JFXUtils {
     static void ShowChallengeNotification() throws IOException {

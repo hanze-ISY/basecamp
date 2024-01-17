@@ -1,4 +1,4 @@
-package com.tictacto.tictacto;
+package nl.picobello.basecamp.shared;
 
 public class Session {
     private static final Session instance = new Session();
