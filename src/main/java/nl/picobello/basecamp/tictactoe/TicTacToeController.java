@@ -172,6 +172,6 @@ public class TicTacToeController {
     }
 
     public void switchGame(ActionEvent e) throws IOException {
-        JFXUtils.Navigate(this.getClass().getResource("gamechoice.fxml"), (Stage) ((Node) e.getSource()).getScene().getWindow());
+        JFXUtils.Navigate(this.getClass().getResource("/nl/picobello/basecamp/gamechoice.fxml"), (Stage) ((Node) e.getSource()).getScene().getWindow());
     }
 }

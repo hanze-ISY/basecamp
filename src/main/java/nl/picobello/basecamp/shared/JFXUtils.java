@@ -14,7 +14,7 @@ import java.net.URL;
 
 public interface JFXUtils {
     static void ShowChallengeNotification() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(JFXUtils.class.getResource("popup.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(JFXUtils.class.getResource("/nl/picobello/basecamp/popup.fxml"));
         Stage stage = new Stage();
         Scene scene = new Scene(fxmlLoader.load());
 
