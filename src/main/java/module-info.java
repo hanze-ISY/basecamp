@@ -9,4 +9,6 @@ module nl.picobello.basecamp {
     opens nl.picobello.basecamp.shared to javafx.fxml;
     exports nl.picobello.basecamp.tictactoe;
     opens nl.picobello.basecamp.tictactoe to javafx.fxml;
+    exports nl.picobello.basecamp.battleship;
+    opens nl.picobello.basecamp.battleship to javafx.fxml;
 }
