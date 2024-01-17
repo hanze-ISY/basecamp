@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane prefHeight="1080.0" prefWidth="1920.0" styleClass="main-background" stylesheets="@App.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.tictacto.tictacto.GameChoiceController">
+   <top>
+      <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Spel Kiezen" textAlignment="CENTER" wrappingWidth="2041.533203125" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="65.0" />
+         </font>
+      </Text>
+   </top>
+   <center>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button mnemonicParsing="false" onAction="#ticTacToe" text="Tic Tac Toe">
+               <font>
+                  <Font size="45.0" />
+               </font>
+            </Button>
+            <HBox prefHeight="993.0" prefWidth="131.0" />
+            <Button mnemonicParsing="false" text="Zeeslag" onAction="#battleShip" textAlignment="CENTER">
+               <font>
+                  <Font size="45.0" />
+               </font>
+            </Button>
+         </children>
+      </HBox>
+   </center>
+</BorderPane>

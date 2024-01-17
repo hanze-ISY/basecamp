@@ -3,7 +3,6 @@ package com.tictacto.tictacto;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -25,35 +24,30 @@ public class UserNameController {
     private Label errorMessageLabel;
 
     public void login(ActionEvent e) {
-
         String text = textLogin.getText();
         Server server = Server.getInstance();
-        server.AddEventListener(new DataEventListener() {
+        server.addEventListener(ServerEvents.ERROR, event -> {
+            Platform.runLater(() -> errorMessageLabel.setText(event.getData().get("ERROR")));
+        });
+        server.addEventListener(ServerEvents.OK, new DataEventListener() {
             @Override
             public void data(DataEvent event) {
-                if (event.getData().equals("OK")) {
-                    Session session = Session.getInstance();
-                    session.setUsername(text.toLowerCase());
+                Session session = Session.getInstance();
+                session.setUsername(text.toLowerCase());
 
-                    try {
-                        JFXUtils.Navigate("gamepage.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
-                    Platform.runLater(() -> server.RemoveEventListener(this));
+                try {
+                    JFXUtils.Navigate("gamechoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
                 }
-            }
-
-            @Override
-            public void error(DataEvent event) {
-                Platform.runLater(() -> errorMessageLabel.setText(event.getData()));
+                Platform.runLater(() -> server.removeEventListener(ServerEvents.OK, this));
             }
         });
 
         if (text.isEmpty()) {
             errorMessageLabel.setText("Voer een naam in.");
         } else {
-            server.SendCommand("login " + '"' + text.toLowerCase() + '"');
+            server.sendCommand("login " + '"' + text.toLowerCase() + '"');
         }
     }
 }

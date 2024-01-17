@@ -1,8 +1,6 @@
 package com.tictacto.tictacto;
 
 import javafx.application.Platform;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -14,40 +12,46 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 enum GameState {
     WAITING_FOR_OPPONENT,
     YOUR_TURN,
     OPPONENTS_TURN,
     YOU_WON,
-    YOU_LOST
+    YOU_LOST,
+    DRAW
 }
-public class BattleshipController {
+
+public class BattleShipController {
     private final Server server = Server.getInstance();
-    private final BattleshipBoard battleshipBoard = new BattleshipBoard(server, Session.getInstance().getUsername());
+
     @FXML
     public Text state;
-    public VBox chatbox;
-
     @FXML
     private Label dataLabel;
     @FXML
     private Text userLabel;
+
     @FXML
     private TextField challengeNameField;
+    @FXML
+    private TextField debugCommand;
     private GameState currentState = GameState.WAITING_FOR_OPPONENT;
 
-    public BattleshipController() {
+    private BattleshipBoard gameBoard = new BattleshipBoard(server, Session.getInstance().getUsername());
+
+    public BattleShipController() {
         startDataFetchingTask();
         ChallengePopups.startListening();
     }
+
     private void updateStateHeader() {
         switch (currentState) {
             case WAITING_FOR_OPPONENT:
@@ -65,87 +69,85 @@ public class BattleshipController {
             case YOU_LOST:
                 state.setText("Je hebt verloren :(");
                 break;
+            case DRAW:
+                state.setText("Gelijkspel!");
+                break;
         }
     }
 
     public void initialize() {
         userLabel.setText(Session.getInstance().getUsername());
+        Platform.runLater(this::updateStateHeader);
+        //System.out.println(gameBoard.getPlayerName()); //debug
+
     }
 
     private void startDataFetchingTask() {
-        server.AddEventListener(event -> {
-            String data = event.getData();
-            if (data.startsWith("PLAYERLIST")) {
-                // return data is a JSONified array with strings, denoting usernames
-                // substring(11) removes the "PLAYERLIST " part
-                // e.g. PLAYERLIST ["user1", "user2", "user3"] -> ["user1", "user2", "user3"]
-                String[] players = data
-                        .substring(11)
-                        .replace("[", "")
-                        .replace("]", "")
-                        .replace("\"", "")
-                        .split(", ");
-                // TODO: update the UI with the new playerlist
-                Platform.runLater(() -> dataLabel.setText(Arrays.toString(players)));
+        server.addEventListener(ServerEvents.PLAYER_LIST, event -> {
+            HashMap<String, String> data = event.getData();
+            // TODO: update the player list
+            Platform.runLater(() -> dataLabel.setText(Arrays.toString(data.get("LIST").split(" "))));
+        });
+        server.addEventListener(ServerEvents.LOSE, event -> {
+            currentState = GameState.YOU_LOST;
+            Platform.runLater(this::updateStateHeader);
+        });
+        server.addEventListener(ServerEvents.WIN, event -> {
+            currentState = GameState.YOU_WON;
+            Platform.runLater(this::updateStateHeader);
+        });
+        server.addEventListener(ServerEvents.MOVE, event -> {
+            HashMap<String, String> data = event.getData();
+            //Platform.runLater(() -> changeTile((Pane) state.getScene().lookup("#" + data.get("MOVE"))));
+            //ALLEMAAL VOOR AI
+            int move = Integer.parseInt(data.get("MOVE"));
+            int length = 10;
+            if(data.get("LENGTH") != null) {
+                length = Integer.parseInt(data.get("LENGTH"));
             }
-//            if (data.startsWith("GAME YOURTURN")) {
-//                // its our turn!
-//                currentState = GameState.YOUR_TURN;
-//            }
-            if (data.startsWith("GAME MATCH")) {
-                // the game has started!
-                currentState = data.contains("PLAYERTOMOVE: \"" + Session.getInstance().getUsername() + "\"") ? GameState.YOUR_TURN : GameState.OPPONENTS_TURN;
-                battleshipBoard.resetBoard();
-                //Have to start sequence for placing ships
-            }
-            if (data.startsWith("GAME LOSS")) {
-                currentState = GameState.YOU_LOST;
-            }
-            if (data.startsWith("GAME WIN")) {
-                currentState = GameState.YOU_WON;
-            }
-            //update visual trackers of boards with either hit or miss
-            if (data.startsWith("SVR GAME MOVE")) {
-                String[] parts = data.split("RESULT: \"");
-                if (parts.length >= 2) {
-                    String result = parts[1].split("\"")[0];
-                    int index = extractIndexFromData(data);
-                    String playerName = extractPlayerNameFromData(data);
-                    // Update boards based on the result
-                    //battleshipBoard.updateBoards(index, playerName, result);
-
-                    currentState = Objects.equals(Session.getInstance().getUsername(), playerName) ? GameState.OPPONENTS_TURN : GameState.YOUR_TURN;
-                }
+            gameBoard.updateBoards(move, data.get("PLAYER"), data.get("RESULT"), length);
+            System.out.println("Board: \n" + gameBoard);
+            System.out.println("Opponent Board: \n" + gameBoard.oppToString());
+            currentState = Objects.equals(Session.getInstance().getUsername(), data.get("PLAYER")) ? GameState.YOUR_TURN : GameState.OPPONENTS_TURN;
+            Platform.runLater(this::updateStateHeader);
+        });
+        server.addEventListener(ServerEvents.YOUR_TURN, event -> {
+            currentState = GameState.YOUR_TURN;
+            if(!gameBoard.shipsPlaced()) { //Voor nu alleen AI
+                gameBoard.aiPlaceShips();
+                System.out.println(gameBoard);
+            } else {
+                int move = gameBoard.aiMove();
+                server.sendCommand("move " + move);
             }
             Platform.runLater(this::updateStateHeader);
         });
-        new Thread(new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                while (true) {
-                    server.SendCommand("get playerlist");
+        server.addEventListener(ServerEvents.DRAW, event -> {
+            currentState = GameState.DRAW;
+            Platform.runLater(this::updateStateHeader);
+        });
+        server.addEventListener(ServerEvents.NEW_MATCH, event -> {
+            HashMap<String, String> data = event.getData();
+            currentState =
+                    data.get("PLAYERTOMOVE").equals(Session.getInstance().getUsername())
+                            ? GameState.YOUR_TURN
+                            : GameState.OPPONENTS_TURN;
+            Platform.runLater(this::updateStateHeader);
+            gameBoard.resetBoard();//bord resetten
+            //Platform.runLater(this::resetAllTiles);
+        });
+
+        Thread playerTask = new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
                     Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-        }).start();
-    }
-
-    private int extractIndexFromData(String data) {
-        String[] moveParts = data.split("MOVE: ");
-        if (moveParts.length >= 2) {
-            String indexString = moveParts[1].split(",")[0].trim(); // Assuming the index is followed by a comma
-            return Integer.parseInt(indexString);
-        }
-        return -1; // Return a default value or handle the case when index extraction fails
-    }
-
-    private String extractPlayerNameFromData(String data) {
-        String[] playerParts = data.split("PLAYER: ");
-        if (playerParts.length >= 2) {
-            String playerName = playerParts[1].split(",")[0].trim(); // Assuming the player name is followed by a comma
-            return playerName;
-        }
-        return "Unknown"; // Return a default value or handle the case when player name extraction fails
+        });
+        playerTask.setDaemon(true);
+        playerTask.start();
     }
 
     public void ButtonClick(MouseEvent e) throws IOException {
@@ -162,19 +164,27 @@ public class BattleshipController {
         if (!pane.getChildren().isEmpty()) {
             return;
         }
-        server.SendCommand("move " + pane.getId());
-        //changeTile(e);
+        server.sendCommand("move " + pane.getId());
     }
 
     public void challengePlayer(ActionEvent e) {
         String challengeName = challengeNameField.getText().toLowerCase();
-        String spelType = "Tic-tac-toe";
+        String spelType = "Battleship";
         String challengeRequest = "challenge " + challengeName + " " + spelType;
-        server.SendCommand(challengeRequest);
+        server.sendCommand(challengeRequest);
+    }
+
+    public void debugSendCommand(ActionEvent e) {
+        String command = debugCommand.getText();
+        System.out.println(command);
+        server.sendCommand(command);
     }
 
     public void logout(ActionEvent e) throws IOException {
-        server.CloseConnection();
         Platform.exit();
+    }
+
+    public void switchGame(ActionEvent e) throws IOException {
+        JFXUtils.Navigate("gamechoice.fxml", (Stage) ((Node) e.getSource()).getScene().getWindow());
     }
 }
