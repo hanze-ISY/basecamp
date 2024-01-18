@@ -1,4 +1,4 @@
-package com.tictacto.tictacto;
+package nl.picobello.basecamp.shared;
 
 import java.io.*;
 import java.net.*;
