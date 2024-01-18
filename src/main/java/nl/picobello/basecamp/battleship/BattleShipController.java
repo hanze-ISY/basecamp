@@ -3,10 +3,15 @@ package nl.picobello.basecamp.battleship;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -30,6 +35,8 @@ public class BattleShipController {
     private Label dataLabel;
     @FXML
     private Text userLabel;
+    @FXML
+    private GridPane grid;
 
     @FXML
     private TextField challengeNameField;
@@ -69,7 +76,10 @@ public class BattleShipController {
 
     public void initialize() {
         userLabel.setText(Session.getInstance().getUsername());
-        Platform.runLater(this::updateStateHeader);
+        Platform.runLater(() -> {
+            updateStateHeader();
+            fillGridPaneWithSymbols();
+        });
         //System.out.println(gameBoard.getPlayerName()); //debug
 
     }
@@ -126,7 +136,6 @@ public class BattleShipController {
                             : GameState.OPPONENTS_TURN;
             Platform.runLater(this::updateStateHeader);
             gameBoard.resetBoard();//bord resetten
-            //Platform.runLater(this::resetAllTiles);
         });
 
         Thread playerTask = new Thread(() -> {
@@ -140,6 +149,30 @@ public class BattleShipController {
         });
         playerTask.setDaemon(true);
         playerTask.start();
+    }
+
+    private void fillGridPaneWithSymbols() {
+        int numRows = 8; // Number of rows in the GridPane
+        int numCols = 8; // Number of columns in the GridPane
+    
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                Label pane = createSymbol(); // Create a new label
+                grid.add(pane, col, row); // Add the label to the GridPane at the specified row and column
+            }
+        }
+    }
+
+    private Label createSymbol() {
+        Label symbol = new Label("-");
+        // Customize the style or properties of the Pane as needed
+        symbol.setPrefSize(200, 200);
+        symbol.setStyle("-fx-background-color: #0E65A3; -fx-border-color: #2C81BD");
+        symbol.setTextFill(Color.color(1, 1, 1));
+        symbol.setFont(new Font(60));
+        symbol.setAlignment(Pos.CENTER);
+        // Add any other customization logic here
+        return symbol;
     }
 
     public void ButtonClick(MouseEvent e) throws IOException {
@@ -174,6 +207,28 @@ public class BattleShipController {
 
     public void logout(ActionEvent e) throws IOException {
         Platform.exit();
+    }
+
+    public void debugPane(ActionEvent e) {
+        Label cell = getNodeFromGridPane(grid, 0, 0);
+        cell.setText("O");
+    }
+
+    private Label getNodeFromGridPane(GridPane gridPane, int row, int col) {
+        for (Node node : gridPane.getChildren()) {
+            Integer rowIndex = GridPane.getRowIndex(node);
+            Integer colIndex = GridPane.getColumnIndex(node);
+            if (rowIndex != null && colIndex != null && rowIndex == row && colIndex == col) {
+                System.out.println("Found node at row: " + rowIndex + ", column: " + colIndex);
+                if (node instanceof Label) {
+                    return (Label) node;
+                } else {
+                    System.out.println("Unexpected node type: " + node.getClass().getName());
+                }
+            }
+        }
+        System.out.println("Node not found at row: " + row + ", column: " + col);
+        return null;
     }
 
     public void switchGame(ActionEvent e) throws IOException {
