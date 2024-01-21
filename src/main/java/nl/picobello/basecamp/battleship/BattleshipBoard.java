@@ -292,7 +292,7 @@ public class BattleshipBoard {
             }
         }
         shipsPlaced = true;
-
+        return new int[]{0, 0};
     }
 
     //Determine best move for AI. Basic AI for now
