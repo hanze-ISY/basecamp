@@ -117,12 +117,7 @@ public class BattleShipController {
             currentState = GameState.YOUR_TURN;
             if(!gameBoard.shipsPlaced()) { //Voor nu alleen AI
                 gameBoard.aiPlaceShips();
-                //Update board
-                for(int i = 0; i < 64; i++) {
-                    char symbol = gameBoard.getSymbol(i);
-                    editCell(i, String.valueOf(symbol));
-                }
-                System.out.println(gameBoard);
+                //System.out.println(gameBoard);
             } else {
                 int move = gameBoard.aiMove();
                 server.sendCommand("move " + move);
@@ -197,6 +192,15 @@ public class BattleShipController {
         Platform.exit();
     }
 
+    //Iterate through game board and update gui
+    private void updateBoard() {
+        for(int i = 0; i < 64; i++) {
+            char symbol = gameBoard.getSymbol(i);
+            //System.out.println("Index: " + i + ", Symbol: " + symbol);
+            editCell(i, String.valueOf(symbol));
+        }
+    }
+
     //Edit specified cell
     private void editCell(int index, String symbol) {
         Label label = getNodeFromGridPane(grid, index);
@@ -205,8 +209,8 @@ public class BattleShipController {
 
     //Debug
     public void debugPane(ActionEvent e) {
-        Label cell = getNodeFromGridPane(grid, 8);
-        cell.setText("O");
+        gameBoard.aiPlaceShips();
+        updateBoard();
     }
 
     //Convert 1D index to 2D index
