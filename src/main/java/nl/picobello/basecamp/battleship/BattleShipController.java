@@ -45,6 +45,7 @@ public class BattleShipController {
     private GameState currentState = GameState.WAITING_FOR_OPPONENT;
 
     private BattleshipBoard gameBoard = new BattleshipBoard(server, Session.getInstance().getUsername());
+    private boolean shipsPrinted = false;
 
     public BattleShipController() {
         startDataFetchingTask();
@@ -107,6 +108,19 @@ public class BattleShipController {
             if(data.get("LENGTH") != null) {
                 length = Integer.parseInt(data.get("LENGTH"));
             }
+            if(!data.get("PLAYER").equals(Session.getInstance().getUsername())) {
+                if(data.get("RESULT").equals("BOEM")) {
+                    editCell(move, "X");
+                } else if (data.get("RESULT").equals("PLONS")) {
+                    editCell(move, "O");
+                }
+            }
+            // try {
+            //     Thread.sleep(3000);
+            // } catch (InterruptedException e) {
+            //     // TODO Auto-generated catch block
+            //     e.printStackTrace();
+            // }
             gameBoard.updateBoards(move, data.get("PLAYER"), data.get("RESULT"), length);
             System.out.println("Board: \n" + gameBoard);
             System.out.println("Opponent Board: \n" + gameBoard.oppToString());
@@ -117,6 +131,13 @@ public class BattleShipController {
             currentState = GameState.YOUR_TURN;
             if(!gameBoard.shipsPlaced()) { //Voor nu alleen AI
                 gameBoard.aiPlaceShips();
+                updateBoard();
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
                 //System.out.println(gameBoard);
             } else {
                 int move = gameBoard.aiMove();
@@ -204,12 +225,16 @@ public class BattleShipController {
     //Edit specified cell
     private void editCell(int index, String symbol) {
         Label label = getNodeFromGridPane(grid, index);
-        label.setText(symbol);
+        Platform.runLater(() -> {
+            // Your UI update code goes here
+            // For example, updating a label's text
+            label.setText(symbol);
+        });    
     }
 
     //Debug
     public void debugPane(ActionEvent e) {
-        gameBoard.aiPlaceShips();
+        gameBoard.aiPlaceShips();  
         updateBoard();
     }
 
