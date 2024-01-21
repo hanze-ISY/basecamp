@@ -253,7 +253,7 @@ public class BattleshipBoard {
     }
 
     //Determine ship placement for AI, for now randomized
-    public void aiPlaceShips(){
+    public int[] aiPlaceShips(){
         Random random = new Random();
         int start = 0;
         int end = 0;
@@ -287,10 +287,12 @@ public class BattleshipBoard {
                     invalidPlacement = false;
                     remainingShips[i - 1] = 0;  // Set count for this ship size to 0
                     server.sendCommand("place " + start + " " + end);
+                    return new int[] {start, end};
                 }
             }
         }
         shipsPlaced = true;
+
     }
 
     //Determine best move for AI. Basic AI for now
