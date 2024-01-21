@@ -117,6 +117,11 @@ public class BattleShipController {
             currentState = GameState.YOUR_TURN;
             if(!gameBoard.shipsPlaced()) { //Voor nu alleen AI
                 gameBoard.aiPlaceShips();
+                //Update board
+                for(int i = 0; i < 64; i++) {
+                    char symbol = gameBoard.getSymbol(i);
+                    editCell(i, String.valueOf(symbol));
+                }
                 System.out.println(gameBoard);
             } else {
                 int move = gameBoard.aiMove();
@@ -175,23 +180,6 @@ public class BattleShipController {
         return symbol;
     }
 
-    public void ButtonClick(MouseEvent e) throws IOException {
-        if (currentState != GameState.YOUR_TURN) {
-            // its not our turn, so we can't do anything
-            return;
-        }
-        System.out.println("Button clicked");
-        Pane pane = (Pane) e.getSource();
-        // determine what turn it is
-        // if it's X's turn, add an "X" to the pane
-        // if it's O's turn, add an "O" to the pane
-        // if the pane already has an "X" or "O", do nothing
-        if (!pane.getChildren().isEmpty()) {
-            return;
-        }
-        server.sendCommand("move " + pane.getId());
-    }
-
     public void challengePlayer(ActionEvent e) {
         String challengeName = challengeNameField.getText().toLowerCase();
         String spelType = "Battleship";
@@ -209,12 +197,32 @@ public class BattleShipController {
         Platform.exit();
     }
 
+    //Edit specified cell
+    private void editCell(int index, String symbol) {
+        Label label = getNodeFromGridPane(grid, index);
+        label.setText(symbol);
+    }
+
+    //Debug
     public void debugPane(ActionEvent e) {
-        Label cell = getNodeFromGridPane(grid, 0, 0);
+        Label cell = getNodeFromGridPane(grid, 8);
         cell.setText("O");
     }
 
-    private Label getNodeFromGridPane(GridPane gridPane, int row, int col) {
+    //Convert 1D index to 2D index
+    private int[] convertIndex(int index) {
+        int x = index % 8;
+        int y = index / 8;
+        return new int[] {x, y};
+
+    }
+
+    //Retrieve specific node within grid pane
+    private Label getNodeFromGridPane(GridPane gridPane, int index) {
+        int[] convertedIndex = convertIndex(index);
+        int row = convertedIndex[1];
+        int col = convertedIndex[0];
+
         for (Node node : gridPane.getChildren()) {
             Integer rowIndex = GridPane.getRowIndex(node);
             Integer colIndex = GridPane.getColumnIndex(node);
