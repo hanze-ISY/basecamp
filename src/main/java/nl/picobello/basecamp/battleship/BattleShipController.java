@@ -45,7 +45,6 @@ public class BattleShipController {
     private GameState currentState = GameState.WAITING_FOR_OPPONENT;
 
     private BattleshipBoard gameBoard = new BattleshipBoard(server, Session.getInstance().getUsername());
-    private boolean shipsPrinted = false;
 
     public BattleShipController() {
         startDataFetchingTask();
@@ -115,12 +114,12 @@ public class BattleShipController {
                     editCell(move, "O");
                 }
             }
-            // try {
-            //     Thread.sleep(3000);
-            // } catch (InterruptedException e) {
-            //     // TODO Auto-generated catch block
-            //     e.printStackTrace();
-            // }
+            try {
+                 Thread.sleep(10);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
             gameBoard.updateBoards(move, data.get("PLAYER"), data.get("RESULT"), length);
             System.out.println("Board: \n" + gameBoard);
             System.out.println("Opponent Board: \n" + gameBoard.oppToString());
@@ -133,7 +132,7 @@ public class BattleShipController {
                 gameBoard.aiPlaceShips();
                 updateBoard();
                 try {
-                    Thread.sleep(3000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -157,6 +156,7 @@ public class BattleShipController {
                             : GameState.OPPONENTS_TURN;
             Platform.runLater(this::updateStateHeader);
             gameBoard.resetBoard();//bord resetten
+            resetGameBoard();
         });
 
         Thread playerTask = new Thread(() -> {
@@ -181,6 +181,12 @@ public class BattleShipController {
                 Label pane = createSymbol(); // Create a new label
                 grid.add(pane, col, row); // Add the label to the GridPane at the specified row and column
             }
+        }
+    }
+
+    private void resetGameBoard() {
+        for(int i = 0; i < 63; i++) {
+            editCell(i, "-");
         }
     }
 
@@ -229,7 +235,7 @@ public class BattleShipController {
             // Your UI update code goes here
             // For example, updating a label's text
             label.setText(symbol);
-        });    
+        });
     }
 
     //Debug
@@ -256,7 +262,7 @@ public class BattleShipController {
             Integer rowIndex = GridPane.getRowIndex(node);
             Integer colIndex = GridPane.getColumnIndex(node);
             if (rowIndex != null && colIndex != null && rowIndex == row && colIndex == col) {
-                System.out.println("Found node at row: " + rowIndex + ", column: " + colIndex);
+                //System.out.println("Found node at row: " + rowIndex + ", column: " + colIndex);
                 if (node instanceof Label) {
                     return (Label) node;
                 } else {

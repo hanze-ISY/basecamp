@@ -86,6 +86,16 @@ public class BattleshipBoard {
         for(int i = 0; i < opponentShips.length; i++){
             opponentShips[i] = 1;
         }
+        //Reset ship placement tracker
+        for(int i = 0; i < remainingShips.length; i++) {
+            remainingShips[i] = 1;
+        }
+        //Reset player ship counter
+        for(int i = 0; i < playerShips.length; i++) {
+            playerShips[i] = 1;
+        }
+        AIState = 0;
+        lastHit = 0;
         shipsPlaced = false;
     }
 
