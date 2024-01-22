@@ -15,11 +15,12 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import nl.picobello.basecamp.shared.*;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import com.opencsv.*;
 
 public class BattleShipController {
     private final Server server = Server.getInstance();
@@ -38,6 +39,11 @@ public class BattleShipController {
     private GameState currentState = GameState.WAITING_FOR_OPPONENT;
 
     private BattleshipBoard gameBoard = new BattleshipBoard(server, Session.getInstance().getUsername());
+
+    List<String[]> gameData = new ArrayList<String[]>();
+    private int movesCount = 0;
+    long startTime = 0;
+    long duration = 0;
 
     public BattleShipController() {
         startDataFetchingTask();
@@ -71,7 +77,6 @@ public class BattleShipController {
         userLabel.setText(Session.getInstance().getUsername());
         Platform.runLater(this::updateStateHeader);
         //System.out.println(gameBoard.getPlayerName()); //debug
-
     }
 
     private void startDataFetchingTask() {
@@ -82,10 +87,14 @@ public class BattleShipController {
         });
         server.addEventListener(ServerEvents.LOSE, event -> {
             currentState = GameState.YOU_LOST;
+            duration = System.currentTimeMillis() - startTime;
+            writeData();
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.WIN, event -> {
             currentState = GameState.YOU_WON;
+            duration = System.currentTimeMillis() - startTime;
+            writeData();
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.MOVE, event -> {
@@ -111,6 +120,7 @@ public class BattleShipController {
             } else {
                 int move = gameBoard.aiMove();
                 server.sendCommand("move " + move);
+                movesCount++;
             }
             Platform.runLater(this::updateStateHeader);
         });
@@ -119,6 +129,7 @@ public class BattleShipController {
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.NEW_MATCH, event -> {
+            startTime = System.currentTimeMillis();
             HashMap<String, String> data = event.getData();
             currentState =
                     data.get("PLAYERTOMOVE").equals(Session.getInstance().getUsername())
@@ -178,5 +189,83 @@ public class BattleShipController {
 
     public void switchGame(ActionEvent e) throws IOException {
         JFXUtils.Navigate(this.getClass().getResource("/nl/picobello/basecamp/gamechoice.fxml"), (Stage) ((Node) e.getSource()).getScene().getWindow());
+    }
+
+    private List<String[]> readData(String filePath) {
+        List<String[]> content = new ArrayList<>();
+
+        try (CSVReader reader = new CSVReader(new FileReader(filePath))) {
+            String[] nextLine;
+            while ((nextLine = reader.readNext()) != null) {
+                // Each 'nextLine' is an array representing a row in the CSV
+                content.add(nextLine);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return content;
+    }
+
+    public void writeData() {
+
+        String directoryPath = "C:\\Users\\Hussain\\Desktop\\last-version\\basecamp\\src\\main\\java\\nl\\picobello\\basecamp";
+        String fileName = "gameData.csv";
+        String pathAndFileName = "C:\\Users\\Hussain\\Desktop\\last-version\\basecamp\\src\\main\\java\\nl\\picobello\\basecamp\\gameData.csv";
+
+        Path filePath = Paths.get(directoryPath, fileName);
+
+        File file = new File(pathAndFileName);
+
+        FileWriter outputfile;
+        CSVWriter writer;
+        try {
+
+            if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
+//                System.out.println("CSV file exists in the directory."); //debug
+                outputfile = new FileWriter(file, true);
+                writer = new CSVWriter(outputfile);
+
+            } else {
+//                System.out.println("CSV file does not exist in the directory."); //debug
+                outputfile = new FileWriter(file);
+                writer = new CSVWriter(outputfile);
+
+                // adding header to csv
+                String[] header = { "Resultaat(win/lose)", "Aantal zetten", "Tijdsduur(ms)", "Winrate(%)" };
+                writer.writeNext(header);
+            }
+
+            List<String[]> games = readData(pathAndFileName);
+            int gamesCount = games.size() - 1;
+            int wins = 0;
+            double winrate = 0.0;
+
+            for (String[] row : games) {
+                for (String cell : row) {
+                    if (cell.equals("WON")) {
+                        wins++;
+                    }
+                }
+            }
+
+            String result = String.valueOf(currentState);
+            result = result.substring(result.indexOf("_") + 1);
+
+            if (result.equals("WON")) {
+                wins++;
+                winrate = (double) wins / gamesCount * 100;
+            } else if (wins != 0) {
+                winrate = (double) wins / gamesCount * 100;
+            }
+
+            // add data to csv
+            gameData.add(new String[] { result, String.valueOf(movesCount),
+                    String.valueOf(duration), String.format("%.0f", winrate) });
+            writer.writeAll(gameData);
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
