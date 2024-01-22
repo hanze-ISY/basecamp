@@ -102,7 +102,7 @@ public class BattleShipController {
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.WIN, event -> {
-            currentState = GameState.YOU_WON;
+            currentState = GameState.YOU_WON;;
             duration = System.currentTimeMillis() - startTime;
             writeData();
             Platform.runLater(this::updateStateHeader);
@@ -316,8 +316,8 @@ public class BattleShipController {
 
         FileWriter outputfile;
         CSVWriter writer;
-        try {
 
+        try {
             if (Files.exists(filePath) && Files.isRegularFile(filePath)) {
 //                System.out.println("CSV file exists in the directory."); //debug
                 outputfile = new FileWriter(file, true);
@@ -349,11 +349,26 @@ public class BattleShipController {
             String result = String.valueOf(currentState);
             result = result.substring(result.indexOf("_") + 1);
 
+            System.out.println(winrate);
+            System.out.println(result);
             if (result.equals("WON")) {
                 wins++;
+                System.out.println(wins);
+                if (gamesCount < 0) {
+                    gamesCount++;
+                }
+                System.out.println(gamesCount);
+                gamesCount++;
+                System.out.println(gamesCount);
                 winrate = (double) wins / gamesCount * 100;
+                System.out.println(winrate);
             } else if (wins != 0) {
+                System.out.println(result);
+                System.out.println(wins);
+                gamesCount++;
+                System.out.println(gamesCount);
                 winrate = (double) wins / gamesCount * 100;
+                System.out.println(winrate);
             }
 
             // add data to csv
@@ -361,6 +376,8 @@ public class BattleShipController {
                     String.valueOf(duration), String.format("%.0f", winrate) });
             writer.writeAll(gameData);
             writer.close();
+            movesCount = 0;
+            gameData.clear();
 
         } catch (IOException e) {
             e.printStackTrace();
