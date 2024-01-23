@@ -13,12 +13,13 @@ public class ChallengePopups {
     private static boolean running = false;
     static final Server server = Server.getInstance();
     private static Map<String, String> challenge;
+    private static final Session session = Session.getInstance();
     @FXML
     private Text playername;
 
     public void initialize() {
-        if (playername == null) {
-            throw new RuntimeException("playername is null");
+        if (session.getIncomingChallenge() != null) {
+            playername.setText(session.getIncomingChallenge().get("CHALLENGER"));
         }
     }
     public static void startListening() {
@@ -26,6 +27,7 @@ public class ChallengePopups {
             running = true;
             server.addEventListener(ServerEvents.CHALLENGE, event -> {
                 challenge = event.getData();
+                session.setIncomingChallenge(challenge);
                 Platform.runLater(() -> {
                     try {
                         JFXUtils.ShowChallengeNotification();
@@ -41,6 +43,7 @@ public class ChallengePopups {
         // String id = challenge.get("CHALLENGENUMBER");
         // server.SendCommand("challenge deny " + id);
         // close the modal
+        session.setIncomingChallenge(null);
         Scene scene = playername.getScene();
         scene.getWindow().hide();
     }
@@ -48,6 +51,7 @@ public class ChallengePopups {
     public void acceptChallenge(MouseEvent mouseEvent) {
         String id = challenge.get("CHALLENGENUMBER");
         server.sendCommand("challenge accept " + id);
+        session.setIncomingChallenge(null);
         // close the modal
         Scene scene = playername.getScene();
         scene.getWindow().hide();
