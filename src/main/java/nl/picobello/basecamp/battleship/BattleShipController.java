@@ -130,8 +130,8 @@ public class BattleShipController {
                 e.printStackTrace();
             }
             gameBoard.updateBoards(move, data.get("PLAYER"), data.get("RESULT"), length);
-            System.out.println("Board: \n" + gameBoard);
-            System.out.println("Opponent Board: \n" + gameBoard.oppToString());
+            //System.out.println("Board: \n" + gameBoard);
+            //System.out.println("Opponent Board: \n" + gameBoard.oppToString());
             currentState = Objects.equals(Session.getInstance().getUsername(), data.get("PLAYER")) ? GameState.YOUR_TURN : GameState.OPPONENTS_TURN;
             Platform.runLater(this::updateStateHeader);
         });
