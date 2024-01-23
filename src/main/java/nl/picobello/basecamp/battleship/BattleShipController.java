@@ -306,9 +306,9 @@ public class BattleShipController {
 
     public void writeData() {
 
-        String directoryPath = "C:\\Users\\Hussain\\Desktop\\last-version\\basecamp\\src\\main\\java\\nl\\picobello\\basecamp";
-        String fileName = "gameData.csv";
-        String pathAndFileName = "C:\\Users\\Hussain\\Desktop\\last-version\\basecamp\\src\\main\\java\\nl\\picobello\\basecamp\\gameData.csv";
+        String directoryPath = "./";
+        String fileName = String.format("gameData.%s.csv", Session.getInstance().getUsername());
+        String pathAndFileName = directoryPath + fileName;
 
         Path filePath = Paths.get(directoryPath, fileName);
 
