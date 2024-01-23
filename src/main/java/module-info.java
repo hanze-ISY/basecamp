@@ -1,6 +1,7 @@
 module nl.picobello.basecamp {
     requires javafx.controls;
     requires javafx.fxml;
+    requires opencsv;
 
 
     opens nl.picobello.basecamp to javafx.fxml;
