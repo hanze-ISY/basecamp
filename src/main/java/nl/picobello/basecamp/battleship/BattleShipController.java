@@ -109,7 +109,6 @@ public class BattleShipController {
         });
         server.addEventListener(ServerEvents.MOVE, event -> {
             HashMap<String, String> data = event.getData();
-            //Platform.runLater(() -> changeTile((Pane) state.getScene().lookup("#" + data.get("MOVE"))));
             //ALLEMAAL VOOR AI
             int move = Integer.parseInt(data.get("MOVE"));
             int length = 10;
@@ -148,7 +147,7 @@ public class BattleShipController {
                 }
                 //System.out.println(gameBoard);
             } else {
-                int move = gameBoard.aiMove();
+                int move = gameBoard.aiMoveAlternate();
                 server.sendCommand("move " + move);
                 movesCount++;
             }
