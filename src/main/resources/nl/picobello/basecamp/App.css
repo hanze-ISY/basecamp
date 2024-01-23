@@ -1,9 +1,9 @@
 .main-background {
-    -fx-background-color:#0E65A3;
+    -fx-background-color: #0E65A3;
 }
 
 .middle-pane {
-    -fx-background-color:#0E65A3;
+    -fx-background-color: #0E65A3;
 }
 
 .bar-right {
@@ -54,7 +54,7 @@
 .grid-panes {
     -fx-border-style: solid;
     -fx-border-width: 10;
-    -fx-border-color:  #2C81BD;
+    -fx-border-color: #2C81BD;
 }
 
 .grid-panes:hover {

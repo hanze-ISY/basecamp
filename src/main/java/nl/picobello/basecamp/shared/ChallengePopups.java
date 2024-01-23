@@ -21,6 +21,7 @@ public class ChallengePopups {
             throw new RuntimeException("playername is null");
         }
     }
+
     public static void startListening() {
         if (!running) {
             running = true;

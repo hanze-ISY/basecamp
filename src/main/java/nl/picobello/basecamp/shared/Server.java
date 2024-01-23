@@ -55,8 +55,8 @@ public class Server {
                                     // DataEvent still wants a HashMap, so we'll just put the data in a HashMap
                                     HashMap<String, String> data = new HashMap<>();
                                     data.put("LIST", String.join(" ", response.substring(type
-                                                    == ServerEvents.GAME_LIST ? 14 : 16)
-                                            .split(" "))
+                                                            == ServerEvents.GAME_LIST ? 14 : 16)
+                                                    .split(" "))
                                             .replaceAll("[\\[\\]\",]", ""));
                                     yield new DataEvent(this, data, type);
                                 }
