@@ -3,15 +3,10 @@ package nl.picobello.basecamp.battleship;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -35,8 +30,6 @@ public class BattleShipController {
     private Label dataLabel;
     @FXML
     private Text userLabel;
-    @FXML
-    private GridPane grid;
 
     @FXML
     private TextField challengeNameField;
@@ -76,10 +69,7 @@ public class BattleShipController {
 
     public void initialize() {
         userLabel.setText(Session.getInstance().getUsername());
-        Platform.runLater(() -> {
-            updateStateHeader();
-            fillGridPaneWithSymbols();
-        });
+        Platform.runLater(this::updateStateHeader);
         //System.out.println(gameBoard.getPlayerName()); //debug
 
     }
@@ -117,7 +107,7 @@ public class BattleShipController {
             currentState = GameState.YOUR_TURN;
             if(!gameBoard.shipsPlaced()) { //Voor nu alleen AI
                 gameBoard.aiPlaceShips();
-                //System.out.println(gameBoard);
+                System.out.println(gameBoard);
             } else {
                 int move = gameBoard.aiMove();
                 server.sendCommand("move " + move);
@@ -136,6 +126,7 @@ public class BattleShipController {
                             : GameState.OPPONENTS_TURN;
             Platform.runLater(this::updateStateHeader);
             gameBoard.resetBoard();//bord resetten
+            //Platform.runLater(this::resetAllTiles);
         });
 
         Thread playerTask = new Thread(() -> {
@@ -151,28 +142,21 @@ public class BattleShipController {
         playerTask.start();
     }
 
-    private void fillGridPaneWithSymbols() {
-        int numRows = 8; // Number of rows in the GridPane
-        int numCols = 8; // Number of columns in the GridPane
-    
-        for (int row = 0; row < numRows; row++) {
-            for (int col = 0; col < numCols; col++) {
-                Label pane = createSymbol(); // Create a new label
-                grid.add(pane, col, row); // Add the label to the GridPane at the specified row and column
-            }
+    public void ButtonClick(MouseEvent e) throws IOException {
+        if (currentState != GameState.YOUR_TURN) {
+            // its not our turn, so we can't do anything
+            return;
         }
-    }
-
-    private Label createSymbol() {
-        Label symbol = new Label("-");
-        // Customize the style or properties of the Pane as needed
-        symbol.setPrefSize(200, 200);
-        symbol.setStyle("-fx-background-color: #0E65A3; -fx-border-color: #2C81BD");
-        symbol.setTextFill(Color.color(1, 1, 1));
-        symbol.setFont(new Font(60));
-        symbol.setAlignment(Pos.CENTER);
-        // Add any other customization logic here
-        return symbol;
+        System.out.println("Button clicked");
+        Pane pane = (Pane) e.getSource();
+        // determine what turn it is
+        // if it's X's turn, add an "X" to the pane
+        // if it's O's turn, add an "O" to the pane
+        // if the pane already has an "X" or "O", do nothing
+        if (!pane.getChildren().isEmpty()) {
+            return;
+        }
+        server.sendCommand("move " + pane.getId());
     }
 
     public void challengePlayer(ActionEvent e) {
@@ -190,57 +174,6 @@ public class BattleShipController {
 
     public void logout(ActionEvent e) throws IOException {
         Platform.exit();
-    }
-
-    //Iterate through game board and update gui
-    private void updateBoard() {
-        for(int i = 0; i < 64; i++) {
-            char symbol = gameBoard.getSymbol(i);
-            //System.out.println("Index: " + i + ", Symbol: " + symbol);
-            editCell(i, String.valueOf(symbol));
-        }
-    }
-
-    //Edit specified cell
-    private void editCell(int index, String symbol) {
-        Label label = getNodeFromGridPane(grid, index);
-        label.setText(symbol);
-    }
-
-    //Debug
-    public void debugPane(ActionEvent e) {
-        gameBoard.aiPlaceShips();
-        updateBoard();
-    }
-
-    //Convert 1D index to 2D index
-    private int[] convertIndex(int index) {
-        int x = index % 8;
-        int y = index / 8;
-        return new int[] {x, y};
-
-    }
-
-    //Retrieve specific node within grid pane
-    private Label getNodeFromGridPane(GridPane gridPane, int index) {
-        int[] convertedIndex = convertIndex(index);
-        int row = convertedIndex[1];
-        int col = convertedIndex[0];
-
-        for (Node node : gridPane.getChildren()) {
-            Integer rowIndex = GridPane.getRowIndex(node);
-            Integer colIndex = GridPane.getColumnIndex(node);
-            if (rowIndex != null && colIndex != null && rowIndex == row && colIndex == col) {
-                System.out.println("Found node at row: " + rowIndex + ", column: " + colIndex);
-                if (node instanceof Label) {
-                    return (Label) node;
-                } else {
-                    System.out.println("Unexpected node type: " + node.getClass().getName());
-                }
-            }
-        }
-        System.out.println("Node not found at row: " + row + ", column: " + col);
-        return null;
     }
 
     public void switchGame(ActionEvent e) throws IOException {

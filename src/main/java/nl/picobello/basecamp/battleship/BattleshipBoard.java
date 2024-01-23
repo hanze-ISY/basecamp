@@ -197,6 +197,7 @@ public class BattleshipBoard {
     }
 
     private void placeSingleShip(int start, int end) {
+        String request = String.format("place %d %d", start, end);
         // Place ship based on start and end indices
         int direction = (start < end) ? 1 : -1;
         int step = (start / boardWidth == end / boardWidth) ? direction : direction * boardWidth;
@@ -252,7 +253,7 @@ public class BattleshipBoard {
     }
 
     //Determine ship placement for AI, for now randomized
-    public int[] aiPlaceShips(){
+    public void aiPlaceShips(){
         Random random = new Random();
         int start = 0;
         int end = 0;
@@ -286,12 +287,10 @@ public class BattleshipBoard {
                     invalidPlacement = false;
                     remainingShips[i - 1] = 0;  // Set count for this ship size to 0
                     server.sendCommand("place " + start + " " + end);
-                    return new int[] {start, end};
                 }
             }
         }
         shipsPlaced = true;
-        return new int[]{0, 0};
     }
 
     //Determine best move for AI. Basic AI for now
