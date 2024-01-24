@@ -111,6 +111,13 @@ public class BattleShipController {
         });
         server.addEventListener(ServerEvents.MOVE, event -> {
             HashMap<String, String> data = event.getData();
+            if (log.getText().equals("")) {
+                log.setText(String.format("%s: Fired at %s - %s", data.get("PLAYER"), data.get("MOVE"), data.get("RESULT")));
+            }
+            // if we have more than 20 lines, start removing the first line
+            if (log.getText().chars().filter(ch -> ch == '\n').count() > 20) {
+                log.setText(log.getText().substring(log.getText().indexOf("\n") + 1));
+            }
             this.log.setText(log.getText() + String.format("\n%s: Fired at %s - %s", data.get("PLAYER"), data.get("MOVE"), data.get("RESULT")));
             //ALLEMAAL VOOR AI
             int move = Integer.parseInt(data.get("MOVE"));
