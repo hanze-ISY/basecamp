@@ -216,7 +216,6 @@ public class BattleshipBoard {
     }
 
     private void placeSingleShip(int start, int end) {
-        String request = String.format("place %d %d", start, end);
         // Place ship based on start and end indices
         int direction = (start < end) ? 1 : -1;
         int step = (start / boardWidth == end / boardWidth) ? direction : direction * boardWidth;
