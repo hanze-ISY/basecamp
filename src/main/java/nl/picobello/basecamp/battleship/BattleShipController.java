@@ -51,6 +51,7 @@ public class BattleShipController {
     private int movesCount = 0;
     long startTime = 0;
     long duration = 0;
+    private int hitCount = 0;
 
     public BattleShipController() {
         startDataFetchingTask();
@@ -120,6 +121,10 @@ public class BattleShipController {
                     editCell(move, "X");
                 } else if (data.get("RESULT").equals("PLONS")) {
                     editCell(move, "O");
+                }
+            } else if(data.get("PLAYER").equals(Session.getInstance().getUsername())) {
+                if(data.get("RESULT").equals("BOEM")) {
+                    hitCount++;
                 }
             }
             try {
@@ -328,7 +333,7 @@ public class BattleShipController {
                 writer = new CSVWriter(outputfile);
 
                 // adding header to csv
-                String[] header = { "Resultaat(win/lose)", "Aantal zetten", "Tijdsduur(ms)", "Winrate(%)" };
+                String[] header = { "Resultaat(win/lose)", "Aantal zetten", "Tijdsduur(ms)", "Winrate(%)", "Hitrate(%)"};
                 writer.writeNext(header);
             }
 
@@ -336,6 +341,7 @@ public class BattleShipController {
             int gamesCount = games.size() - 1;
             int wins = 0;
             double winrate = 0.0;
+            double hitRate = (double) hitCount / (double)movesCount * 100;
 
             for (String[] row : games) {
                 for (String cell : row) {
@@ -372,10 +378,13 @@ public class BattleShipController {
 
             // add data to csv
             gameData.add(new String[] { result, String.valueOf(movesCount),
-                    String.valueOf(duration), String.format("%.0f", winrate) });
+                    String.valueOf(duration), String.format("%.0f", winrate), String.format("%.0f", hitRate)});
             writer.writeAll(gameData);
             writer.close();
+            System.out.println("moves " + movesCount);
+            System.out.println("hits " + hitCount);
             movesCount = 0;
+            hitCount = 0;
             gameData.clear();
 
         } catch (IOException e) {
