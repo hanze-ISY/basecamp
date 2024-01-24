@@ -3,15 +3,10 @@ package nl.picobello.basecamp.battleship;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -36,8 +31,6 @@ public class BattleShipController {
     private Label dataLabel;
     @FXML
     private Text userLabel;
-    @FXML
-    private GridPane grid;
 
     @FXML
     private TextField challengeNameField;
@@ -82,10 +75,7 @@ public class BattleShipController {
 
     public void initialize() {
         userLabel.setText(Session.getInstance().getUsername());
-        Platform.runLater(() -> {
-            updateStateHeader();
-            fillGridPaneWithSymbols();
-        });
+        Platform.runLater(this::updateStateHeader);
         //System.out.println(gameBoard.getPlayerName()); //debug
     }
 
@@ -182,16 +172,21 @@ public class BattleShipController {
         playerTask.start();
     }
 
-    private void fillGridPaneWithSymbols() {
-        int numRows = 8; // Number of rows in the GridPane
-        int numCols = 8; // Number of columns in the GridPane
-    
-        for (int row = 0; row < numRows; row++) {
-            for (int col = 0; col < numCols; col++) {
-                Label pane = createSymbol(); // Create a new label
-                grid.add(pane, col, row); // Add the label to the GridPane at the specified row and column
-            }
+    public void ButtonClick(MouseEvent e) throws IOException {
+        if (currentState != GameState.YOUR_TURN) {
+            // its not our turn, so we can't do anything
+            return;
         }
+        System.out.println("Button clicked");
+        Pane pane = (Pane) e.getSource();
+        // determine what turn it is
+        // if it's X's turn, add an "X" to the pane
+        // if it's O's turn, add an "O" to the pane
+        // if the pane already has an "X" or "O", do nothing
+        if (!pane.getChildren().isEmpty()) {
+            return;
+        }
+        server.sendCommand("move " + pane.getId());
     }
 
     private void resetGameBoard() {
