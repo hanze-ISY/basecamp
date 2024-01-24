@@ -36,6 +36,10 @@ public class BattleShipController {
     private Text userLabel;
     @FXML
     private GridPane grid;
+    @FXML
+    private Text log;
+    @FXML
+    private GridPane board;
 
     @FXML
     private TextField challengeNameField;
@@ -107,6 +111,7 @@ public class BattleShipController {
         });
         server.addEventListener(ServerEvents.MOVE, event -> {
             HashMap<String, String> data = event.getData();
+            this.log.setText(log.getText() + String.format("\n%s: Fired at %s - %s", data.get("PLAYER"), data.get("MOVE"), data.get("RESULT")));
             //ALLEMAAL VOOR AI
             int move = Integer.parseInt(data.get("MOVE"));
             int length = 10;
@@ -202,9 +207,9 @@ public class BattleShipController {
         Label symbol = new Label("-");
         // Customize the style or properties of the Pane as needed
         symbol.setPrefSize(200, 200);
-        symbol.setStyle("-fx-background-color: #0E65A3; -fx-border-color: #2C81BD");
+        // symbol.setStyle("-fx-background-color: #0E65A3; -fx-border-color: #2C81BD");
         symbol.setTextFill(Color.color(1, 1, 1));
-        symbol.setFont(new Font(60));
+        symbol.setFont(new Font(30));
         symbol.setAlignment(Pos.CENTER);
         // Add any other customization logic here
         return symbol;
