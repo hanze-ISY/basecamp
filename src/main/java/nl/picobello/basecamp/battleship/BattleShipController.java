@@ -88,6 +88,7 @@ public class BattleShipController {
         Platform.runLater(() -> {
             updateStateHeader();
             fillGridPaneWithSymbols();
+            fillBoardWithSymbols();
         });
         //System.out.println(gameBoard.getPlayerName()); //debug
     }
@@ -120,14 +121,17 @@ public class BattleShipController {
                 length = Integer.parseInt(data.get("LENGTH"));
             }
             if (!data.get("PLAYER").equals(Session.getInstance().getUsername())) {
-                if (data.get("RESULT").equals("BOEM")) {
-                    editCell(move, "X");
+                if (data.get("RESULT").equals("BOEM") || data.get("RESULT").equals("GEZONKEN")) {
+                    editCell(grid, move, "💥");
                 } else if (data.get("RESULT").equals("PLONS")) {
-                    editCell(move, "O");
+                    editCell(grid, move, "💦");
                 }
             } else if(data.get("PLAYER").equals(Session.getInstance().getUsername())) {
-                if(data.get("RESULT").equals("BOEM")) {
+                if(data.get("RESULT").equals("BOEM") || data.get("RESULT").equals("GEZONKEN")) {
+                    editCell(board, move, "💥");
                     //hitCount++;
+                } else if (data.get("RESULT").equals("PLONS")) {
+                    editCell(board, move, "💦");
                 }
             }
             try {
@@ -146,7 +150,7 @@ public class BattleShipController {
             currentState = GameState.YOUR_TURN;
             if (!gameBoard.shipsPlaced()) { //Voor nu alleen AI
                 gameBoard.aiPlaceShips();
-                updateBoard();
+                updateBoard(grid);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -190,6 +194,18 @@ public class BattleShipController {
         playerTask.start();
     }
 
+    private void fillBoardWithSymbols() {
+        int numRows = 8; // Number of rows in the GridPane
+        int numCols = 8; // Number of columns in the GridPane
+
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                Label pane = createSymbol(); // Create a new label
+                board.add(pane, col, row); // Add the label to the GridPane at the specified row and column
+            }
+        }
+    }
+
     private void fillGridPaneWithSymbols() {
         int numRows = 8; // Number of rows in the GridPane
         int numCols = 8; // Number of columns in the GridPane
@@ -204,16 +220,19 @@ public class BattleShipController {
 
     private void resetGameBoard() {
         for (int i = 0; i < 63; i++) {
-            editCell(i, "-");
+            editCell(grid, i, "🌊");
+        }
+        for (int i = 0; i < 63; i++) {
+            editCell(board, i, "🌊");
         }
     }
 
     private Label createSymbol() {
-        Label symbol = new Label("-");
+        Label symbol = new Label("🌊");
         // Customize the style or properties of the Pane as needed
         symbol.setPrefSize(200, 200);
         // symbol.setStyle("-fx-background-color: #0E65A3; -fx-border-color: #2C81BD");
-        symbol.setTextFill(Color.color(1, 1, 1));
+        symbol.setTextFill(Color.CYAN);
         symbol.setFont(new Font(30));
         symbol.setAlignment(Pos.CENTER);
         // Add any other customization logic here
@@ -237,29 +256,48 @@ public class BattleShipController {
         Platform.exit();
     }
 
-    //Iterate through game board and update gui
-    private void updateBoard() {
+    //Iterate through game board and update gui, only for own board visual
+    private void updateBoard(GridPane grid) {
         for (int i = 0; i < 64; i++) {
-            char symbol = gameBoard.getSymbol(i);
-            //System.out.println("Index: " + i + ", Symbol: " + symbol);
-            editCell(i, String.valueOf(symbol));
+            if(gameBoard.getSymbol(i) == 'S') {
+                editCell(grid, i, "⛵");
+            } else {
+                //char symbol = gameBoard.getSymbol(i);
+                editCell(grid, i, "🌊");
+            }    
         }
     }
 
     //Edit specified cell
-    private void editCell(int index, String symbol) {
+    private void editCell(GridPane grid, int index, String symbol) {
         Label label = getNodeFromGridPane(grid, index);
-        Platform.runLater(() -> {
-            // Your UI update code goes here
-            // For example, updating a label's text
-            label.setText(symbol);
-        });
+        if(symbol.equals("⛵")) {
+            Platform.runLater(() -> {
+                label.setTextFill(Color.BLACK);
+                label.setText(symbol);
+            });
+        } else if(symbol.equals("🌊")) {
+            Platform.runLater(() -> {
+                label.setTextFill(Color.CYAN);
+                label.setText(symbol);
+            });
+        } else if(symbol.equals("💥")) {
+            Platform.runLater(() -> {
+                label.setTextFill(Color.RED);
+                label.setText(symbol);
+            });
+        } else if(symbol.equals("💦")) {
+            Platform.runLater(() -> {
+                label.setTextFill(Color.WHITE);
+                label.setText(symbol);
+            });
+        }
     }
 
     //Debug
     public void debugPane(ActionEvent e) {
         gameBoard.aiPlaceShips();
-        updateBoard();
+        updateBoard(grid);
     }
 
     //Convert 1D index to 2D index
