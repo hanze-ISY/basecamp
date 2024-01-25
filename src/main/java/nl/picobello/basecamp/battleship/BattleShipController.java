@@ -100,19 +100,19 @@ public class BattleShipController {
         });
         server.addEventListener(ServerEvents.LOSE, event -> {
             currentState = GameState.YOU_LOST;
-            duration = System.currentTimeMillis() - startTime;
-            writeData();
+            //duration = System.currentTimeMillis() - startTime;
+            //writeData();
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.WIN, event -> {
             currentState = GameState.YOU_WON;
-            duration = System.currentTimeMillis() - startTime;
-            writeData();
+            //duration = System.currentTimeMillis() - startTime;
+            //writeData();
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.MOVE, event -> {
             HashMap<String, String> data = event.getData();
-            this.log.setText(log.getText() + String.format("\n%s: Fired at %s - %s", data.get("PLAYER"), data.get("MOVE"), data.get("RESULT")));
+            //this.log.setText(log.getText() + String.format("\n%s: Fired at %s - %s", data.get("PLAYER"), data.get("MOVE"), data.get("RESULT")));
             //ALLEMAAL VOOR AI
             int move = Integer.parseInt(data.get("MOVE"));
             int length = 10;
@@ -127,7 +127,7 @@ public class BattleShipController {
                 }
             } else if(data.get("PLAYER").equals(Session.getInstance().getUsername())) {
                 if(data.get("RESULT").equals("BOEM")) {
-                    hitCount++;
+                    //hitCount++;
                 }
             }
             try {
@@ -157,7 +157,7 @@ public class BattleShipController {
             } else {
                 int move = gameBoard.aiMoveAlternate();
                 server.sendCommand("move " + move);
-                movesCount++;
+                //movesCount++;
             }
             Platform.runLater(this::updateStateHeader);
         });
@@ -166,7 +166,7 @@ public class BattleShipController {
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.NEW_MATCH, event -> {
-            startTime = System.currentTimeMillis();
+            //startTime = System.currentTimeMillis();
             HashMap<String, String> data = event.getData();
             currentState =
                     data.get("PLAYERTOMOVE").equals(Session.getInstance().getUsername())
