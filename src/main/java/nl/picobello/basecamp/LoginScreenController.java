@@ -23,6 +23,7 @@ public class LoginScreenController {
     private TextField textLogin;
     @FXML
     private Label errorMessageLabel;
+
     public void login(ActionEvent e) {
         String text = textLogin.getText();
         Server server = Server.getInstance();
@@ -36,7 +37,7 @@ public class LoginScreenController {
                 session.setUsername(text.toLowerCase());
 
                 try {
-                    JFXUtils.Navigate(this.getClass().getResource("/nl/picobello/basecamp/gamechoice.fxml") ,(Stage) ((Node) e.getSource()).getScene().getWindow());
+                    JFXUtils.Navigate(this.getClass().getResource("/nl/picobello/basecamp/gamechoice.fxml"), (Stage) ((Node) e.getSource()).getScene().getWindow());
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }

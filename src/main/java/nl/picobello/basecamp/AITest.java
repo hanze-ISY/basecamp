@@ -1,7 +1,7 @@
 package nl.picobello.basecamp;
 
-import nl.picobello.basecamp.battleship.*;
-import nl.picobello.basecamp.shared.*;
+import nl.picobello.basecamp.battleship.BattleshipBoard;
+import nl.picobello.basecamp.shared.Server;
 
 import java.util.Map;
 import java.util.Scanner;
@@ -23,29 +23,29 @@ public class AITest {
 
         Scanner scanner = new Scanner(System.in);
 
-        while(inGame) {
-            if(noShips){
+        while (inGame) {
+            if (noShips) {
                 playerBoard.placeShips();
                 aiBoard.aiPlaceShips();
-                System.out.print(aiBoard.toString());
+                System.out.print(aiBoard);
                 noShips = false;
             }
 
-            while(PLAYER_TURN){
+            while (PLAYER_TURN) {
                 System.out.println("Player turn.");
-                
+
                 System.out.println("Please enter the index of your move: ");
                 int move = scanner.nextInt();
 
-                while(move < 0 || move > 63){
+                while (move < 0 || move > 63) {
                     System.out.println("Invalid index. Please enter the index of your move: ");
                     move = scanner.nextInt();
                 }
-                
-                String result = new String();
+
+                String result = "";
                 int sunkShipSize = 0;
 
-                if(aiBoard.getSymbol(move) == 'S'){
+                if (aiBoard.getSymbol(move) == 'S') {
                     result = "PLONS";
                     aiBoard.editCell(move, 'X');
                     int shipSunk = isShipSunk(aiBoard, move);
@@ -55,11 +55,9 @@ public class AITest {
                         System.out.println("Ship of size " + shipSunk + " is sunk!");
                         sunkShipSize = shipSunk;
                     }
-                }
-                else if(aiBoard.getSymbol(move) == '-' || aiBoard.getSymbol(move) == 'O'){
+                } else if (aiBoard.getSymbol(move) == '-' || aiBoard.getSymbol(move) == 'O') {
                     result = "BOEM";
-                }
-                else{
+                } else {
                     System.out.println("Index already hit.");
                 }
 
@@ -72,40 +70,38 @@ public class AITest {
                 AI_TURN = true;
             }
 
-            while(AI_TURN) {
+            while (AI_TURN) {
                 System.out.println("AI turn");
 
                 int move = aiBoard.aiMove();
 
-                String result = new String();
+                String result = "";
                 int sunkShipSize = 0;
 
-                if(playerBoard.getSymbol(move) == 'S'){
+                if (playerBoard.getSymbol(move) == 'S') {
                     result = "PLONS";
                     playerBoard.editCell(move, 'X');
                     int shipSunk = isShipSunk(playerBoard, move);
-                    
+
                     if (shipSunk != 0) {
                         result = "GEZONKEN";
                         System.out.println("Ship of size " + shipSunk + " is sunk!");
                         sunkShipSize = shipSunk;
                     }
-                }
-                else if(playerBoard.getSymbol(move) == '-' || playerBoard.getSymbol(move) == 'O'){
+                } else if (playerBoard.getSymbol(move) == '-' || playerBoard.getSymbol(move) == 'O') {
                     result = "BOEM";
-                }
-                else{
+                } else {
                     System.out.println("Index already hit.");
                 }
 
                 aiBoard.updateBoards(move, "AI", result, sunkShipSize);
                 playerBoard.updateBoards(move, "AI", result, sunkShipSize);
-                System.out.println(playerBoard.toString());
+                System.out.println(playerBoard);
 
                 PLAYER_TURN = true;
                 AI_TURN = false;
             }
-            if(playerBoard.gameOver() || aiBoard.gameOver()) {
+            if (playerBoard.gameOver() || aiBoard.gameOver()) {
                 System.out.println("Game Over");
                 inGame = false;
             }
@@ -116,7 +112,7 @@ public class AITest {
     private static int isShipSunk(BattleshipBoard board, int move) {
         Map<Integer, int[]> shipPositions = board.getShipPositions();
         char symbol = board.getSymbol(move);
-    
+
         if (symbol == 'S' || symbol == 'X') {
             for (Map.Entry<Integer, int[]> entry : shipPositions.entrySet()) {
                 int size = entry.getKey();
@@ -125,13 +121,13 @@ public class AITest {
                 int end = indices[1];
                 boolean isVertical = false;
                 boolean isHorizontal = false;
-    
+
                 if ((end - start) % 8 == 0) {
                     isVertical = true;
                 } else if (end - start < 9) {
                     isHorizontal = true;
                 }
-    
+
                 if (isVertical && (move >= start && move <= end) && (move % 8 - start % 8 == 0)) {
                     //System.out.println(size + " vertical");
                     // Check if the ship is sunk
@@ -142,13 +138,12 @@ public class AITest {
                             break;
                         }
                     }
-    
+
                     if (shipSunk) {
                         System.out.println("Sunk");
                         return size; // The size of the ship that is completely sunk
                     }
-                }
-                else if(isHorizontal && (move >= start && move <= end)) {
+                } else if (isHorizontal && (move >= start && move <= end)) {
                     //System.out.println(size + "horizontal");
                     // Check if the ship is sunk
                     boolean shipSunk = true;
@@ -158,7 +153,7 @@ public class AITest {
                             break;
                         }
                     }
-    
+
                     if (shipSunk) {
                         return size; // The size of the ship that is completely sunk
                     }
@@ -167,5 +162,5 @@ public class AITest {
             }
         }
         return 0; // No ship is sunk
-    }   
+    }
 }

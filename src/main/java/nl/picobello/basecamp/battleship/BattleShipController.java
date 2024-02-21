@@ -1,31 +1,29 @@
 package nl.picobello.basecamp.battleship;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import nl.picobello.basecamp.shared.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import com.opencsv.*;
 
 public class BattleShipController {
     private final Server server = Server.getInstance();
@@ -38,6 +36,10 @@ public class BattleShipController {
     private Text userLabel;
     @FXML
     private GridPane grid;
+    @FXML
+    private Text log;
+    @FXML
+    private GridPane board;
 
     @FXML
     private TextField challengeNameField;
@@ -45,12 +47,13 @@ public class BattleShipController {
     private TextField debugCommand;
     private GameState currentState = GameState.WAITING_FOR_OPPONENT;
 
-    private BattleshipBoard gameBoard = new BattleshipBoard(server, Session.getInstance().getUsername());
+    private final BattleshipBoard gameBoard = new BattleshipBoard(server, Session.getInstance().getUsername());
 
     List<String[]> gameData = new ArrayList<String[]>();
     private int movesCount = 0;
     long startTime = 0;
     long duration = 0;
+    private int hitCount = 0;
 
     public BattleShipController() {
         startDataFetchingTask();
@@ -85,6 +88,7 @@ public class BattleShipController {
         Platform.runLater(() -> {
             updateStateHeader();
             fillGridPaneWithSymbols();
+            fillBoardWithSymbols();
         });
         //System.out.println(gameBoard.getPlayerName()); //debug
     }
@@ -97,49 +101,56 @@ public class BattleShipController {
         });
         server.addEventListener(ServerEvents.LOSE, event -> {
             currentState = GameState.YOU_LOST;
-            duration = System.currentTimeMillis() - startTime;
-            writeData();
+            //duration = System.currentTimeMillis() - startTime;
+            //writeData();
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.WIN, event -> {
-            currentState = GameState.YOU_WON;;
-            duration = System.currentTimeMillis() - startTime;
-            writeData();
+            currentState = GameState.YOU_WON;
+            //duration = System.currentTimeMillis() - startTime;
+            //writeData();
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.MOVE, event -> {
             HashMap<String, String> data = event.getData();
-            //Platform.runLater(() -> changeTile((Pane) state.getScene().lookup("#" + data.get("MOVE"))));
+            //this.log.setText(log.getText() + String.format("\n%s: Fired at %s - %s", data.get("PLAYER"), data.get("MOVE"), data.get("RESULT")));
             //ALLEMAAL VOOR AI
             int move = Integer.parseInt(data.get("MOVE"));
             int length = 10;
-            if(data.get("LENGTH") != null) {
+            if (data.get("LENGTH") != null) {
                 length = Integer.parseInt(data.get("LENGTH"));
             }
-            if(!data.get("PLAYER").equals(Session.getInstance().getUsername())) {
-                if(data.get("RESULT").equals("BOEM")) {
-                    editCell(move, "X");
+            if (!data.get("PLAYER").equals(Session.getInstance().getUsername())) {
+                if (data.get("RESULT").equals("BOEM") || data.get("RESULT").equals("GEZONKEN")) {
+                    editCell(grid, move, "💥");
                 } else if (data.get("RESULT").equals("PLONS")) {
-                    editCell(move, "O");
+                    editCell(grid, move, "💦");
+                }
+            } else if(data.get("PLAYER").equals(Session.getInstance().getUsername())) {
+                if(data.get("RESULT").equals("BOEM") || data.get("RESULT").equals("GEZONKEN")) {
+                    editCell(board, move, "💥");
+                    //hitCount++;
+                } else if (data.get("RESULT").equals("PLONS")) {
+                    editCell(board, move, "💦");
                 }
             }
             try {
-                 Thread.sleep(10);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
             gameBoard.updateBoards(move, data.get("PLAYER"), data.get("RESULT"), length);
-            System.out.println("Board: \n" + gameBoard);
-            System.out.println("Opponent Board: \n" + gameBoard.oppToString());
+            //System.out.println("Board: \n" + gameBoard);
+            //System.out.println("Opponent Board: \n" + gameBoard.oppToString());
             currentState = Objects.equals(Session.getInstance().getUsername(), data.get("PLAYER")) ? GameState.YOUR_TURN : GameState.OPPONENTS_TURN;
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.YOUR_TURN, event -> {
             currentState = GameState.YOUR_TURN;
-            if(!gameBoard.shipsPlaced()) { //Voor nu alleen AI
+            if (!gameBoard.shipsPlaced()) { //Voor nu alleen AI
                 gameBoard.aiPlaceShips();
-                updateBoard();
+                updateBoard(grid);
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -148,9 +159,9 @@ public class BattleShipController {
                 }
                 //System.out.println(gameBoard);
             } else {
-                int move = gameBoard.aiMove();
+                int move = gameBoard.aiMoveAlternate();
                 server.sendCommand("move " + move);
-                movesCount++;
+                //movesCount++;
             }
             Platform.runLater(this::updateStateHeader);
         });
@@ -159,7 +170,7 @@ public class BattleShipController {
             Platform.runLater(this::updateStateHeader);
         });
         server.addEventListener(ServerEvents.NEW_MATCH, event -> {
-            startTime = System.currentTimeMillis();
+            //startTime = System.currentTimeMillis();
             HashMap<String, String> data = event.getData();
             currentState =
                     data.get("PLAYERTOMOVE").equals(Session.getInstance().getUsername())
@@ -183,10 +194,22 @@ public class BattleShipController {
         playerTask.start();
     }
 
+    private void fillBoardWithSymbols() {
+        int numRows = 8; // Number of rows in the GridPane
+        int numCols = 8; // Number of columns in the GridPane
+
+        for (int row = 0; row < numRows; row++) {
+            for (int col = 0; col < numCols; col++) {
+                Label pane = createSymbol(); // Create a new label
+                board.add(pane, col, row); // Add the label to the GridPane at the specified row and column
+            }
+        }
+    }
+
     private void fillGridPaneWithSymbols() {
         int numRows = 8; // Number of rows in the GridPane
         int numCols = 8; // Number of columns in the GridPane
-    
+
         for (int row = 0; row < numRows; row++) {
             for (int col = 0; col < numCols; col++) {
                 Label pane = createSymbol(); // Create a new label
@@ -196,18 +219,21 @@ public class BattleShipController {
     }
 
     private void resetGameBoard() {
-        for(int i = 0; i < 63; i++) {
-            editCell(i, "-");
+        for (int i = 0; i < 63; i++) {
+            editCell(grid, i, "🌊");
+        }
+        for (int i = 0; i < 63; i++) {
+            editCell(board, i, "🌊");
         }
     }
 
     private Label createSymbol() {
-        Label symbol = new Label("-");
+        Label symbol = new Label("🌊");
         // Customize the style or properties of the Pane as needed
         symbol.setPrefSize(200, 200);
-        symbol.setStyle("-fx-background-color: #0E65A3; -fx-border-color: #2C81BD");
-        symbol.setTextFill(Color.color(1, 1, 1));
-        symbol.setFont(new Font(60));
+        // symbol.setStyle("-fx-background-color: #0E65A3; -fx-border-color: #2C81BD");
+        symbol.setTextFill(Color.CYAN);
+        symbol.setFont(new Font(30));
         symbol.setAlignment(Pos.CENTER);
         // Add any other customization logic here
         return symbol;
@@ -230,36 +256,55 @@ public class BattleShipController {
         Platform.exit();
     }
 
-    //Iterate through game board and update gui
-    private void updateBoard() {
-        for(int i = 0; i < 64; i++) {
-            char symbol = gameBoard.getSymbol(i);
-            //System.out.println("Index: " + i + ", Symbol: " + symbol);
-            editCell(i, String.valueOf(symbol));
+    //Iterate through game board and update gui, only for own board visual
+    private void updateBoard(GridPane grid) {
+        for (int i = 0; i < 64; i++) {
+            if(gameBoard.getSymbol(i) == 'S') {
+                editCell(grid, i, "⛵");
+            } else {
+                //char symbol = gameBoard.getSymbol(i);
+                editCell(grid, i, "🌊");
+            }    
         }
     }
 
     //Edit specified cell
-    private void editCell(int index, String symbol) {
+    private void editCell(GridPane grid, int index, String symbol) {
         Label label = getNodeFromGridPane(grid, index);
-        Platform.runLater(() -> {
-            // Your UI update code goes here
-            // For example, updating a label's text
-            label.setText(symbol);
-        });
+        if(symbol.equals("⛵")) {
+            Platform.runLater(() -> {
+                label.setTextFill(Color.BLACK);
+                label.setText(symbol);
+            });
+        } else if(symbol.equals("🌊")) {
+            Platform.runLater(() -> {
+                label.setTextFill(Color.CYAN);
+                label.setText(symbol);
+            });
+        } else if(symbol.equals("💥")) {
+            Platform.runLater(() -> {
+                label.setTextFill(Color.RED);
+                label.setText(symbol);
+            });
+        } else if(symbol.equals("💦")) {
+            Platform.runLater(() -> {
+                label.setTextFill(Color.WHITE);
+                label.setText(symbol);
+            });
+        }
     }
 
     //Debug
     public void debugPane(ActionEvent e) {
-        gameBoard.aiPlaceShips();  
-        updateBoard();
+        gameBoard.aiPlaceShips();
+        updateBoard(grid);
     }
 
     //Convert 1D index to 2D index
     private int[] convertIndex(int index) {
         int x = index % 8;
         int y = index / 8;
-        return new int[] {x, y};
+        return new int[]{x, y};
 
     }
 
@@ -329,7 +374,7 @@ public class BattleShipController {
                 writer = new CSVWriter(outputfile);
 
                 // adding header to csv
-                String[] header = { "Resultaat(win/lose)", "Aantal zetten", "Tijdsduur(ms)", "Winrate(%)" };
+                String[] header = { "Resultaat(win/lose)", "Aantal zetten", "Tijdsduur(ms)", "Winrate(%)", "Hitrate(%)"};
                 writer.writeNext(header);
             }
 
@@ -337,6 +382,7 @@ public class BattleShipController {
             int gamesCount = games.size() - 1;
             int wins = 0;
             double winrate = 0.0;
+            double hitRate = (double) hitCount / (double)movesCount * 100;
 
             for (String[] row : games) {
                 for (String cell : row) {
@@ -373,10 +419,13 @@ public class BattleShipController {
 
             // add data to csv
             gameData.add(new String[] { result, String.valueOf(movesCount),
-                    String.valueOf(duration), String.format("%.0f", winrate) });
+                    String.valueOf(duration), String.format("%.0f", winrate), String.format("%.0f", hitRate)});
             writer.writeAll(gameData);
             writer.close();
+            System.out.println("moves " + movesCount);
+            System.out.println("hits " + hitCount);
             movesCount = 0;
+            hitCount = 0;
             gameData.clear();
 
         } catch (IOException e) {

@@ -21,6 +21,7 @@ public class BattleshipBoard {
     private int[] remainingShips = {1, 1, 1, 1}; // One ship of each size: 2, 3, 4, 6 (For ship placement)
     private int[] opponentShips = {1, 1, 1, 1}; //For tracking opponent ships by AI
     private int[] playerShips = {1, 1, 1, 1}; //For tracking player ships
+    private int[] patternArray;
     private boolean shipsPlaced = false;
     private Map<Integer, int[]> shipPositions = new HashMap<>();
     private int boardWidth = 8;
@@ -44,6 +45,10 @@ public class BattleshipBoard {
         for (int i = 0; i < oppBoard.length; i++) {
             oppBoard[i] = WATER;
         }
+        patternArray = new int[32];
+        for(int i = 0; i < patternArray.length; i ++) {
+            patternArray[i] = i * 2;
+        } 
     }
 
     public boolean shipsPlaced() {
@@ -94,9 +99,13 @@ public class BattleshipBoard {
         for(int i = 0; i < playerShips.length; i++) {
             playerShips[i] = 1;
         }
+        for(int i = 0; i < patternArray.length; i ++) {
+            patternArray[i] = i * 2;
+        } 
         AIState = 0;
         lastHit = 0;
         shipsPlaced = false;
+
     }
 
     public boolean gameOver() {
@@ -326,39 +335,94 @@ public class BattleshipBoard {
                 while(!validMove(move)) {
                     move = random.nextInt(64);
                 }
+                AIState = 0;
             } 
         }
         return move;
     }
 
-    //Heatmap generator WIP
-    private Map<Integer, Integer> evaluateBoard() {
-        Map<Integer, Integer> cellScores = new HashMap<>();
+    //fire in checker pattern instead of random
+    public int aiMoveAlternate(){
+        Random random = new Random();
+        int move = 99;
+        int badMoves = 0;
+        int maxAttempts = 100;
 
         if(AIState == 0) {
-            for (int i = 0; i < 64; i++) {
-                if(oppBoard[i] == 'X' || oppBoard[i] == 'O') { //If hit or empty, never pick this cell
-                    cellScores.put(i, 0); 
-                } else { //Firing randomly
-                    cellScores.put(i, 50);
+            int count = 0;
+            int index = random.nextInt(32);
+            move = patternArray[index];
+            patternArray[index] = 99;
+            while(!validMove(move) || move == 99) {
+                index = random.nextInt(32);
+                move = patternArray[index];
+                patternArray[index] = 99;
+                count ++;
+                if(count >= maxAttempts) {
+                    while(!validMove(move)) {
+                        move = random.nextInt(64);
+                    }
                 }
             }
         } else {
-            for (int i = 0; i < 64; i++) {
-                if(oppBoard[i] == 'X' || oppBoard[i] == 'O') { //If hit or empty, never pick this cell
-                    cellScores.put(i, 0);
-                } else {
-                    //cellScores.put(i, targetModeProbability(i));
+            int potentialCells[] = {lastHit + 1, lastHit - 1, lastHit - 8, lastHit + 8};
+            for(int i = 0; i < potentialCells.length; i++) {
+                if(validMove(potentialCells[i])) {
+                    move = potentialCells[i];  
+                }
+                else {
+                    badMoves += 1;
                 }
             }
+            if(badMoves == 4) {
+                while(!validMove(move)) {
+                    move = random.nextInt(64);
+                }
+                AIState = 0;
+            } 
         }
-        return cellScores;
+        return move;
     }
 
-    //WIP
-    //private int targetModeProbability(int move) {
+    //AI with strictly random targeting
+    public int aiMoveRandom() {
+        Random random = new Random();
+        int move = 99;
+        while(!validMove(move)) {
+            move = random.nextInt(64);
+        }
 
-    //}
+        return move;
+    }
+
+    //AI shooting in checkerboard pattern
+    public int aiMoveChecker() {
+        Random random = new Random();
+        int move;
+        int attempts = 0;
+        int maxAttempts = 32;
+    
+        if (lastHit % 2 == 0) {
+            do {
+                move = random.nextInt(64);
+                attempts++;
+            } while ((attempts <= maxAttempts) && (!validMove(move) || move % 2 != 0));
+        } else {
+            do {
+                move = random.nextInt(64);
+                attempts++;
+            } while ((attempts <= maxAttempts) && (!validMove(move) || move % 2 == 0));
+        }
+    
+        // If the maximum attempts are reached, switch to a completely random move
+        if (attempts > maxAttempts) {
+            while(!validMove(move)) {
+                move = random.nextInt(64);
+            }
+        }
+    
+        return move;
+    }
 
     //Determine validity of a move
     private boolean validMove(int move) {

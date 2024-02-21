@@ -30,6 +30,7 @@ public interface JFXUtils {
         stage.show();
         shakeTransition.play();
     }
+
     static void Navigate(URL fxml, Stage current) throws IOException {
         Platform.runLater(() -> {
             try {

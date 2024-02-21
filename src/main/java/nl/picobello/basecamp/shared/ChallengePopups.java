@@ -22,6 +22,7 @@ public class ChallengePopups {
             playername.setText(session.getIncomingChallenge().get("CHALLENGER"));
         }
     }
+
     public static void startListening() {
         if (!running) {
             running = true;
